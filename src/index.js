@@ -6,31 +6,37 @@ const weatherApp = {
   mode: 'weather',
 
   init: () => {
-    const buttonFindMe = document.querySelector('.findMe');
-    buttonFindMe.addEventListener('click', weatherApp.newFunction);
+    const buttonFindMe = document.querySelector('.find-btn');
+    const buttonSearch = document.querySelector('.search-btn');
+    buttonSearch.addEventListener('click', weatherApp.newFunction);
+    buttonFindMe.addEventListener('click', weatherApp.getUserPosition);
   },
 
   async newFunction() {
     const cityName = document.querySelector('#input').value;
 
     try {
+      /* Fetch location data based user input 
+      using openWeather geolocation API*/
       const location = await fetch(
         `http://api.openweathermap.org/geo/1.0/direct?q=${cityName}&appid=${apiKey}`
       );
       const locationData = await location.json();
       const lat = locationData[0].lat;
       const lon = locationData[0].lon;
+
+      /* Fetch weather data based user input 
+      using openWeather  API*/
       const urlForeCast = await fetch(
         `https://api.openweathermap.org/data/2.5/${weatherApp.mode}?lat=${lat}&lon=${lon}&appid=${apiKey}&units=${weatherApp.units}`
       );
       const weatherData = await urlForeCast.json();
-      console.log(weatherData);
     } catch (err) {
       console.error(err);
     }
   },
 
-  /* Methods for find my location  */
+  /* Methods for find my location using js geolocation */
   geoError(error) {
     console.error(error.message);
   },
@@ -38,7 +44,13 @@ const weatherApp = {
   geoSuccess(position) {
     const lat = position.coords.latitude;
     const lon = position.coords.longitude;
-    console.log(lat, lon, position);
+
+    fetch(
+      `https://api.openweathermap.org/data/2.5/${weatherApp.mode}?lat=${lat}&lon=${lon}&appid=${apiKey}&units=${weatherApp.units}`
+    )
+      .then((response) => response.json())
+      .then((response) => console.log(response))
+      .catch((error) => console.log(error));
   },
 
   getUserPosition() {
