@@ -30,36 +30,7 @@ const weatherApp = {
     }
   },
 
-  // fetchWeather() {
-  //   const lat = weatherApp.lat;
-  //   const lon = weatherApp.lon;
-  //   const units = 'metric';
-  //   const mode = 'weather';
-  //   const urlForeCast = `https://api.openweathermap.org/data/2.5/${mode}?lat=${lat}&lon=${lon}&appid=${apiKey}&units=${units}`;
-
-  //   fetch(urlForeCast, { mode: 'cors' })
-  //     .then((response) => response.json())
-  //     .then((response) => console.log(response)) //important data
-  //     .catch((e) => console.error(e));
-  // },
-
-  // fetchLocation() {
-  //   const cityName = document.querySelector('#input').value;
-  //   const urlLocation = `http://api.openweathermap.org/geo/1.0/direct?q=${cityName}&limit=1&appid=${apiKey}`;
-  //   fetch(urlLocation, { mode: 'cors' })
-  //     .then((response) => {
-  //       if (!response.ok) {
-  //         throw new Error('Empty or not correct city name input');
-  //       }
-  //       return response.json();
-  //     })
-  //     .then((response) => {
-  //       weatherApp.lat = response[0].lat;
-  //       weatherApp.lon = response[0].lon;
-  //     }) //important data
-  //     .catch((e) => console.error(e));
-  // },
-
+  /* Methods for find my location  */
   geoError(error) {
     console.error(error.message);
   },
