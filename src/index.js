@@ -3,7 +3,7 @@ import apiKey from './api/key.js';
 
 const weatherApp = {
   units: 'metric',
-  mode: 'weather',
+  mode: 'forecast',
 
   init: () => {
     const buttonFindMe = document.querySelector('.find-btn');
@@ -14,45 +14,21 @@ const weatherApp = {
 
   async newFunction() {
     const cityName = document.querySelector('#input').value;
-
     try {
-      /* Fetch location data based user input 
-      using openWeather geolocation API*/
-      const location = await fetch(
-        `http://api.openweathermap.org/geo/1.0/direct?q=${cityName}&appid=${apiKey}`
-      );
-      const locationData = await location.json();
-      const lat = locationData[0].lat;
-      const lon = locationData[0].lon;
-
-      /* Fetch weather data based user input 
-      using openWeather  API*/
       const urlForeCast = await fetch(
-        `https://api.openweathermap.org/data/2.5/${weatherApp.mode}?lat=${lat}&lon=${lon}&appid=${apiKey}&units=${weatherApp.units}`
+        `https://api.openweathermap.org/data/2.5/${weatherApp.mode}?q=${cityName}&appid=${apiKey}&units=${weatherApp.units}`
       );
+      if (!urlForeCast.ok) {
+        throw new Error("Couldn't find city name");
+      }
       const weatherData = await urlForeCast.json();
+      weatherApp.showWeather(weatherData);
     } catch (err) {
       console.error(err);
     }
   },
 
   /* Methods for find my location using js geolocation */
-  geoError(error) {
-    console.error(error.message);
-  },
-
-  geoSuccess(position) {
-    const lat = position.coords.latitude;
-    const lon = position.coords.longitude;
-
-    fetch(
-      `https://api.openweathermap.org/data/2.5/${weatherApp.mode}?lat=${lat}&lon=${lon}&appid=${apiKey}&units=${weatherApp.units}`
-    )
-      .then((response) => response.json())
-      .then((response) => console.log(response))
-      .catch((error) => console.log(error));
-  },
-
   getUserPosition() {
     const options = {
       enableHighAccuracy: true,
@@ -65,6 +41,44 @@ const weatherApp = {
       weatherApp.geoError,
       options
     );
+  },
+
+  geoError(error) {
+    console.error(error.message);
+  },
+
+  geoSuccess(position) {
+    const lat = position.coords.latitude;
+    const lon = position.coords.longitude;
+
+    fetch(
+      `https://api.openweathermap.org/data/2.5/${weatherApp.mode}?lat=${lat}&lon=${lon}&appid=${apiKey}&units=${weatherApp.units}`
+    )
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(response.statusText);
+        }
+        return response.json();
+      })
+      .then((response) => weatherApp.showWeather(response))
+      .catch((error) => console.log(error));
+  },
+
+  showWeather(data) {
+    console.log(data);
+    // data.list.map((items, index) => {
+    //   if (index <= 8) {
+    //     console.log(items);
+    //   }
+    // });
+    // const date = new Date(data.list[0].dt * 1000);
+  },
+
+  convertCtoF(c) {
+    return (c * 9) / 5 + 32;
+  },
+  convertFtoC(f) {
+    return ((f - 32) * 5) / 9;
   },
 };
 
