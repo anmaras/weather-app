@@ -2,13 +2,13 @@ import './style.css';
 import apiKey from './api/key.js';
 import fromUnixTime from 'date-fns/fromUnixTime';
 import format from 'date-fns/format';
-import { formatDistance } from 'date-fns';
+import myImage from './assets/icons/humidity/humidity_mid.png';
 
 const weatherApp = {
   units: 'metric',
   mode: 'forecast',
   defaultCity: 'athens',
-  unitsType: '&#8451',
+  unitsType: '℃',
 
   init() {
     const buttonSearch = document.querySelector('.search-btn');
@@ -76,31 +76,38 @@ const weatherApp = {
     const {
       dt,
       weather: [{ icon, description }],
-      main: { temp, feels_like },
+      main: { temp, feels_like, humidity, temp_max, temp_min },
     } = data.list[0];
+
+    console.log(myImage);
 
     const weatherTemp = document.querySelector('.weather-temp');
     const weatherImg = document.querySelector('.weather-img');
     const cityName = document.querySelector('.city-name');
-    const currentDay = this.getCurrentDay(dt, timezone);
+    const currentDay = document.querySelector('.current-day');
     const weatherInfo = document.querySelector('.weather-description');
     const feelLike = document.querySelector('.feels-like');
     const sunriseTime = document.querySelector('.sunrise');
     const sunsetTime = document.querySelector('.sunset');
     const currentTime = document.querySelector('.current-time');
-
-    cityName.textContent = `${data.city.name}, ${data.city.country}`;
+    const humidityInput = document.querySelector('.humidity > span');
+    const tempMax = document.querySelector('.temp-max > span');
+    const tempLow = document.querySelector('.temp-low');
+    cityName.textContent = `${name}, ${country}`;
     weatherImg.src = `http://openweathermap.org/img/w/${icon}.png`;
-    weatherTemp.innerHTML = `<p class="weather-temp">${temp} <span>${this.unitsType}</span></p>`;
+    weatherTemp.textContent = `${temp} ${this.unitsType}`;
     weatherInfo.textContent = `${description} `;
     feelLike.textContent = `Feels like ${feels_like}`;
     sunriseTime.textContent = `Sunrise at ${this.getSunRise(sunrise)}`;
     sunsetTime.textContent = `Sunset at ${this.getSunRise(sunset)}`;
-    currentTime.textContent = `${this.getCurrentTime()}`;
+    currentTime.textContent = `Local time is ${this.getCurrentTime()}`;
+    humidityInput.textContent = `${humidity} %`;
+    currentDay.textContent = this.getCurrentDay(dt, timezone);
+    tempMax.textContent = `${temp_max} ${this.unitsType}`;
   },
 
-  getCurrentDay(dt) {
-    return format(new Date(fromUnixTime(dt)), 'EEEE');
+  getCurrentDay(dt, timezone) {
+    return format(new Date(fromUnixTime(dt - timezone)), 'EEEE');
   },
 
   getSunRise(sunrise) {
