@@ -7,11 +7,75 @@
     <title>Weather</title>
   </head>
   <body>
-    <div>
-      <button class="find-btn">Find Me</button>
-      <label for="input"></label>
-      <input type="text" id="input" />
+    <!-- Weather info -->
+    <section id="weather-info ">
+      <ul>
+        <li>
+          <img class="weather-img" src="#" alt="weather image" />
+        </li>
+        <li>
+          <p class="weather-description"></p>
+        </li>
+        <li>
+          <p class="city-name"></p>
+        </li>
+        <li>
+          <p class="weather-temp"></p>
+        </li>
+        <li>
+          <p class="feels-like"></p>
+        </li>
+        <li>
+          <p class="sunrise"></p>
+        </li>
+        <li>
+          <p class="sunset"></p>
+        </li>
+        <li>
+          <p class="current-time"></p>
+        </li>
+      </ul>
+      <input type="text" id="search" placeholder="type a city name" />
       <button class="search-btn">Search</button>
-    </div>
+    </section>
+
+    <!-- Weather Data -->
+    <section id="weather-data">
+      <ul>
+        <li>
+          <p>
+            <span><img src="" alt="" /></span>
+          </p>
+          <span>Humidity img</span> Humidity
+          <p>Humidity number</p>
+        </li>
+        <li>
+          <div><span>Air pressure img</span> Air pressure</div>
+          <p>Air pressure number</p>
+        </li>
+        <li>
+          <div><span>Chance of rain img</span> Chance of rain</div>
+          <p>Chance of rain number</p>
+        </li>
+        <li>
+          <div><span>Air pressure img</span> Air pressure</div>
+          <p>Air pressure number</p>
+        </li>
+      </ul>
+    </section>
+
+    <!-- Weather Forecast -->
+    <section
+      id="weather-forecast"
+      style="background-color: yellow; grid-column: 1/-1"
+    >
+      4
+    </section>
+
+    <!-- <button class="find-btn">Find Me</button>
+    <label for="input"></label>
+    <input type="text" id="input" />
+    <button class="search-btn">Search</button>
+    <h1 class="title"></h1> -->
   </body>
 </html>
