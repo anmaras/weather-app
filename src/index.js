@@ -4,25 +4,31 @@ import fromUnixTime from 'date-fns/fromUnixTime';
 import format from 'date-fns/format';
 import myImage from './assets/icons/humidity/humidity_mid.png';
 
+let test = true;
+
 const weatherApp = {
+  tempSwitch: true,
   units: 'metric',
   mode: 'forecast',
   defaultCity: 'athens',
   unitsType: '℃',
+  defaultLat: 37.9755,
+  defaultLon: 23.7349,
 
   init() {
     const buttonSearch = document.querySelector('.search-btn');
-    buttonSearch.addEventListener('click', this.getWeather);
-    /* For default location */
+    const buttonFahrenheit = document.querySelector('.fahrenheit');
+    buttonFahrenheit.addEventListener('click', weatherApp.convertTempUnits);
+
+    buttonSearch.addEventListener('click', weatherApp.getLocationOptions);
     this.getWeather();
+    this.selectLocation();
   },
 
   async getWeather() {
-    const cityName =
-      document.querySelector('#search').value || weatherApp.defaultCity;
     try {
       const urlForeCast = await fetch(
-        `https://api.openweathermap.org/data/2.5/${weatherApp.mode}?q=${cityName}&appid=${apiKey}&units=${weatherApp.units}`
+        `https://api.openweathermap.org/data/2.5/weather?&lat=${weatherApp.defaultLat}&lon=${weatherApp.defaultLon}&appid=${apiKey}&units=${weatherApp.units}`
       );
       if (!urlForeCast.ok) {
         throw new Error("Couldn't find city name");
@@ -34,76 +40,110 @@ const weatherApp = {
     }
   },
 
-  /* Methods for find my location using js geolocation */
-  // getUserPosition() {
-  //   const options = {
-  //     enableHighAccuracy: true,
-  //     timeout: 5000,
-  //     maximumAge: 0,
-  //   };
+  async getLocationOptions() {
+    const cityName = document.querySelector('#search').value;
+    try {
+      const urlDirect = await fetch(
+        `http://api.openweathermap.org/geo/1.0/direct?q=${cityName}&appid=${apiKey}&units=${weatherApp.units}&limit=5`
+      );
+      if (urlDirect.ok) {
+        const geoData = await urlDirect.json();
+        weatherApp.showLocation(geoData);
+      } else {
+        throw new Error("Couldn't find lat and lon data");
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  },
 
-  //   navigator.geolocation.getCurrentPosition(
-  //     weatherApp.geoSuccess,
-  //     weatherApp.geoError,
-  //     options
-  //   );
-  // },
+  showLocation(data) {
+    const locations = document.querySelector('.geo-locations');
+    if (locations.childNodes.length) {
+      locations.replaceChildren();
+    }
+    data.map((location) => {
+      let markup = `<li>
+      <p><span class="location-name">${
+        location.name
+      }</span> <span class="location-lat d-none">${location.lat}</span> 
+      <span class="location-lon d-none">${location.lon}</span> 
+      ${location.state || ''} ${location.country} </p>
+      </li>`;
+      locations.insertAdjacentHTML('afterbegin', markup);
+    });
+  },
 
-  // geoError(error) {
-  //   console.error(error.message);
-  // },
+  selectLocation() {
+    document.querySelector('.geo-locations').addEventListener('click', (e) => {
+      const target = e.target.closest('p');
+      if (target) {
+        const selectionLat = target.querySelector('.location-lat');
+        const selectionLon = target.querySelector('.location-lon');
 
-  // geoSuccess(position) {
-  //   const lat = position.coords.latitude;
-  //   const lon = position.coords.longitude;
-
-  //   fetch(
-  //     `https://api.openweathermap.org/data/2.5/${weatherApp.mode}?lat=${lat}&lon=${lon}&appid=${apiKey}&units=${weatherApp.units}`
-  //   )
-  //     .then((response) => {
-  //       if (!response.ok) {
-  //         throw new Error(response.statusText);
-  //       }
-  //       return response.json();
-  //     })
-  //     .then((response) => weatherApp.showWeather(response))
-  //     .catch((error) => console.log(error));
-  // },
+        this.defaultLat = selectionLat.textContent;
+        this.defaultLon = selectionLon.textContent;
+      }
+      weatherApp.getWeather();
+    });
+  },
 
   showWeather(data) {
-    console.log(data);
-    const { country, name, sunrise, sunset, timezone } = data.city;
-    const {
-      dt,
-      weather: [{ icon, description }],
-      main: { temp, feels_like, humidity, temp_max, temp_min },
-    } = data.list[0];
+    const firstSection = document.querySelector('.weather-info');
+    const imgSrc = `http://openweathermap.org/img/w/${data.weather[0].icon}.png`;
+    const markup = `
+                   <img class="weather-img" src=${imgSrc} alt="weather image" />
+                   <p class="weather-description">${
+                     data.weather[0].description
+                   }</p>
+                   <p class="city-name">${data.name}, ${data.sys.country}</p>
+                   <p class="weather-temp"><span class="temp">${
+                     data.main.temp
+                   }</span><span class="unit">${this.unitsType}</span>
+                   </p>
+                   <p class="feels-like">Feels Like <span class='temp'>${
+                     data.main.feels_like
+                   }</span><span class="unit">${this.unitsType}</span>
+                   </p>
+                   <p class="sunrise">Sunrise at ${this.getSunRise(
+                     data.sys.sunrise
+                   )}</p>
+                   <p class="sunset">Sunset at ${this.getSunRise(
+                     data.sys.sunset
+                   )}</p>
+                   <p class="current-time">Local time is ${this.getCurrentTime()}</p>
+                   <p class="current-day"> ${this.getCurrentDay(
+                     data.dt,
+                     data.timezone
+                   )}</p>
+                   `;
+    firstSection.insertAdjacentHTML('afterbegin', markup);
+  },
 
-    console.log(myImage);
+  convertTempUnits() {
+    const tempValues = [...document.getElementsByClassName('temp')];
+    const tempUnits = [...document.getElementsByClassName('unit')];
 
-    const weatherTemp = document.querySelector('.weather-temp');
-    const weatherImg = document.querySelector('.weather-img');
-    const cityName = document.querySelector('.city-name');
-    const currentDay = document.querySelector('.current-day');
-    const weatherInfo = document.querySelector('.weather-description');
-    const feelLike = document.querySelector('.feels-like');
-    const sunriseTime = document.querySelector('.sunrise');
-    const sunsetTime = document.querySelector('.sunset');
-    const currentTime = document.querySelector('.current-time');
-    const humidityInput = document.querySelector('.humidity > span');
-    const tempMax = document.querySelector('.temp-max > span');
-    const tempLow = document.querySelector('.temp-low');
-    cityName.textContent = `${name}, ${country}`;
-    weatherImg.src = `http://openweathermap.org/img/w/${icon}.png`;
-    weatherTemp.textContent = `${temp} ${this.unitsType}`;
-    weatherInfo.textContent = `${description} `;
-    feelLike.textContent = `Feels like ${feels_like}`;
-    sunriseTime.textContent = `Sunrise at ${this.getSunRise(sunrise)}`;
-    sunsetTime.textContent = `Sunset at ${this.getSunRise(sunset)}`;
-    currentTime.textContent = `Local time is ${this.getCurrentTime()}`;
-    humidityInput.textContent = `${humidity} %`;
-    currentDay.textContent = this.getCurrentDay(dt, timezone);
-    tempMax.textContent = `${temp_max} ${this.unitsType}`;
+    if (weatherApp.tempSwitch) {
+      tempValues.forEach((value) => {
+        value.textContent = weatherApp.convertCtoF(value.textContent);
+      });
+      tempUnits.forEach((value) => {
+        value.textContent = '°F';
+      });
+    }
+    if (!weatherApp.tempSwitch) {
+      tempValues.forEach((value) => {
+        value.textContent = weatherApp.convertFtoC(value.textContent);
+        tempUnits.forEach((value) => {
+          value.textContent = '°C';
+        });
+      });
+    }
+    this.textContent === '°C'
+      ? (this.textContent = '°F')
+      : (this.textContent = '°C');
+    weatherApp.tempSwitch = !weatherApp.tempSwitch;
   },
 
   getCurrentDay(dt, timezone) {
@@ -123,10 +163,12 @@ const weatherApp = {
   },
 
   convertCtoF(c) {
-    return (c * 9) / 5 + 32;
+    const cToF = (c * 9) / 5 + 32;
+    return cToF.toFixed(2);
   },
   convertFtoC(f) {
-    return ((f - 32) * 5) / 9;
+    const fToC = ((f - 32) * 5) / 9;
+    return fToC.toFixed(2);
   },
 };
 
