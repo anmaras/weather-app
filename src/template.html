@@ -7,54 +7,27 @@
     <title>Weather</title>
   </head>
   <body>
+    <!-- Loading -->
+    <div class="backdrop">
+      <div class="loading"></div>
+    </div>
     <!-- Weather info -->
-    <section id="weather-info ">
-      <ul>
-        <li>
-          <img class="weather-img" src="#" alt="weather image" />
-        </li>
-        <li>
-          <p class="weather-description"></p>
-        </li>
-        <li>
-          <p class="city-name"></p>
-        </li>
-        <li>
-          <p class="weather-temp"></p>
-        </li>
-        <li>
-          <p class="feels-like"></p>
-        </li>
-        <li>
-          <p class="sunrise"></p>
-        </li>
-        <li>
-          <p class="sunset"></p>
-        </li>
-        <li>
-          <p class="current-time"></p>
-        </li>
-        <li>
-          <p class="current-day"></p>
-        </li>
-      </ul>
-      <input type="text" id="search" placeholder="type a city name" />
-      <button class="search-btn">Search</button>
+    <section class="weather-info">
+      <div>
+        <input type="text" id="search" placeholder="type a city name" />
+        <ul class="geo-locations"></ul>
+        <button class="search-btn">Search</button>
+        <button class="fahrenheit">°F</button>
+      </div>
     </section>
 
     <!-- Weather Data -->
     <section id="weather-data">
-      <ul>
-        <li>
-          <p class="humidity">Humidity<span class="d-block">number</span></p>
-        </li>
-        <li>
-          <p class="temp-max">Temp max<span class="d-block">number</span></p>
-        </li>
-        <li>
-          <p class="temp-low">Temp Low<span class="d-block">number</span></p>
-        </li>
-      </ul>
+      <p class="humidity">Humidity<span class="d-block">number</span></p>
+
+      <p class="temp-max">Temp max<span class="d-block">number</span></p>
+
+      <p class="temp-low">Temp Low<span class="d-block">number</span></p>
     </section>
 
     <!-- Weather Forecast -->
