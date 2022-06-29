@@ -2,9 +2,7 @@ import './style.css';
 import apiKey from './api/key.js';
 import fromUnixTime from 'date-fns/fromUnixTime';
 import format from 'date-fns/format';
-import myImage from './assets/icons/humidity/humidity_mid.png';
-
-let test = true;
+import isToday from 'date-fns/isToday';
 
 const weatherApp = {
   tempSwitch: true,
@@ -19,22 +17,28 @@ const weatherApp = {
     buttonFahrenheit.addEventListener('click', weatherApp.convertTempUnits);
 
     buttonSearch.addEventListener('click', weatherApp.getLocationOptions);
-    this.getCurrentWeather();
+    this.getCurrentAndForCastWeather();
     this.selectLocation();
     // this.showBackDrop();
   },
 
-  async getCurrentWeather() {
+  async getCurrentAndForCastWeather() {
     weatherApp.showBackDrop();
     try {
-      const urlForeCast = await fetch(
+      const urlCurrent = await fetch(
         `https://api.openweathermap.org/data/2.5/weather?&lat=${weatherApp.defaultLat}&lon=${weatherApp.defaultLon}&appid=${apiKey}&units=metric`
       );
-      if (!urlForeCast.ok) {
+      const urlForecast = await fetch(
+        `https://api.openweathermap.org/data/2.5/forecast?&lat=${weatherApp.defaultLat}&lon=${weatherApp.defaultLon}&appid=${apiKey}&units=metric`
+      );
+      if (!urlCurrent.ok && !urlForecast) {
         throw new Error("Couldn't find city name");
       }
-      const weatherData = await urlForeCast.json();
-      weatherApp.showWeather(weatherData);
+
+      const currentData = await urlCurrent.json();
+      const forecastData = await urlForecast.json();
+      weatherApp.renderCurrentWeather(currentData);
+      weatherApp.renderForecast(forecastData);
       weatherApp.hideBackDrop();
     } catch (err) {
       console.error(err);
@@ -51,13 +55,13 @@ const weatherApp = {
         throw new Error("Couldn't find lat and lon data");
       }
       const geoData = await urlDirect.json();
-      weatherApp.showLocation(geoData);
+      weatherApp.renderLocation(geoData);
     } catch (err) {
       console.error(err);
     }
   },
 
-  showLocation(data) {
+  renderLocation(data) {
     const locations = document.querySelector('.geo-locations');
     if (locations.childNodes.length) {
       locations.replaceChildren();
@@ -84,11 +88,12 @@ const weatherApp = {
         this.defaultLat = selectionLat.textContent;
         this.defaultLon = selectionLon.textContent;
       }
-      weatherApp.getCurrentWeather();
+      /* fetch weather after user click on selection */
+      weatherApp.getCurrentAndForCastWeather();
     });
   },
 
-  showWeather(data) {
+  renderCurrentWeather(data) {
     console.log(data);
     const weatherInfo = document.querySelector('.weather-info');
     const weatherData = document.querySelector('.weather-data');
@@ -144,6 +149,36 @@ const weatherApp = {
     weatherData.insertAdjacentHTML('afterbegin', markupData);
   },
 
+  renderForecast(fData) {
+    const forecast = document.querySelector('.weather-forecast');
+
+    if (forecast.childNodes.length) {
+      forecast.replaceChildren();
+    }
+    const todayForecast = fData.list
+      .filter((fItem) => {
+        let today = weatherApp.getCurrentTest(fItem.dt, fData.city.timezone);
+        if (isToday(new Date(today))) {
+          return fItem;
+        }
+      })
+      .forEach((tFItem) => {
+        const imgSrc = `http://openweathermap.org/img/w/${tFItem.weather[0].icon}.png`;
+        const markupForecast = `
+        <div><p>${tFItem.dt_txt.slice(10, 16)}</p>
+        <p>${tFItem.weather[0].main}</p>
+        <img class="weather-img" src=${imgSrc} alt="weather image" />
+        <p><span class="temp">${tFItem.main.temp}</span><span class="unit">${
+          this.unitsType
+        }</span>
+        </p>
+        </div>
+        `;
+
+        forecast.insertAdjacentHTML('afterbegin', markupForecast);
+      });
+  },
+
   convertTempUnits() {
     const tempValues = [...document.getElementsByClassName('temp')];
     const tempUnits = [...document.getElementsByClassName('unit')];
@@ -184,6 +219,10 @@ const weatherApp = {
 
   getCurrentDay(dt, timezone) {
     return format(new Date(fromUnixTime(dt - timezone)), 'EEEE');
+  },
+
+  getCurrentTest(dt, timezone) {
+    return new Date(fromUnixTime(dt - timezone));
   },
 
   getSunRise(sunrise) {
