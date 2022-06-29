@@ -8,8 +8,6 @@ let test = true;
 
 const weatherApp = {
   tempSwitch: true,
-  units: 'metric',
-  mode: 'forecast',
   defaultCity: 'athens',
   unitsType: '℃',
   defaultLat: 37.9755,
@@ -21,16 +19,16 @@ const weatherApp = {
     buttonFahrenheit.addEventListener('click', weatherApp.convertTempUnits);
 
     buttonSearch.addEventListener('click', weatherApp.getLocationOptions);
-    this.getWeather();
+    this.getCurrentWeather();
     this.selectLocation();
     // this.showBackDrop();
   },
 
-  async getWeather() {
+  async getCurrentWeather() {
     weatherApp.showBackDrop();
     try {
       const urlForeCast = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?&lat=${weatherApp.defaultLat}&lon=${weatherApp.defaultLon}&appid=${apiKey}&units=${weatherApp.units}`
+        `https://api.openweathermap.org/data/2.5/weather?&lat=${weatherApp.defaultLat}&lon=${weatherApp.defaultLon}&appid=${apiKey}&units=metric`
       );
       if (!urlForeCast.ok) {
         throw new Error("Couldn't find city name");
@@ -86,18 +84,20 @@ const weatherApp = {
         this.defaultLat = selectionLat.textContent;
         this.defaultLon = selectionLon.textContent;
       }
-      weatherApp.getWeather();
+      weatherApp.getCurrentWeather();
     });
   },
 
   showWeather(data) {
     console.log(data);
     const weatherInfo = document.querySelector('.weather-info');
+    const weatherData = document.querySelector('.weather-data');
     const imgSrc = `http://openweathermap.org/img/w/${data.weather[0].icon}.png`;
-    if (weatherInfo.childNodes.length) {
+    if (weatherInfo.childNodes.length || weatherData.childNodes.length) {
       weatherInfo.replaceChildren();
+      weatherData.replaceChildren();
     }
-    const markup = `
+    const markupInfo = `
                    <img class="weather-img" src=${imgSrc} alt="weather image" />
                    <p class="weather-description">${
                      data.weather[0].description
@@ -123,7 +123,25 @@ const weatherApp = {
                      data.timezone
                    )}</p>
                    `;
-    weatherInfo.insertAdjacentHTML('afterbegin', markup);
+    const markupData = `
+                    <p class="humidity">
+                       Humidity<span class="d-block">${data.main.humidity}%</span>
+                    </p>
+                    <p class="pressure">
+                       Pressure<span class="d-block">${data.main.pressure} hPa</span>
+                    </p>
+                    <p class="temp-max">
+                       Max temp <span class="temp">${data.main.temp_max}</span
+                          ><span class="unit"> ${this.unitsType}</span>
+                    </p>
+                    <p class="temp-low">
+                       Low temp <span class="temp">${data.main.temp_min}</span
+                          ><span class="unit"> ${this.unitsType}</span>
+                    </p>
+                    `;
+
+    weatherInfo.insertAdjacentHTML('afterbegin', markupInfo);
+    weatherData.insertAdjacentHTML('afterbegin', markupData);
   },
 
   convertTempUnits() {
