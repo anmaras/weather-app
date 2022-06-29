@@ -23,9 +23,11 @@ const weatherApp = {
     buttonSearch.addEventListener('click', weatherApp.getLocationOptions);
     this.getWeather();
     this.selectLocation();
+    // this.showBackDrop();
   },
 
   async getWeather() {
+    weatherApp.showBackDrop();
     try {
       const urlForeCast = await fetch(
         `https://api.openweathermap.org/data/2.5/weather?&lat=${weatherApp.defaultLat}&lon=${weatherApp.defaultLon}&appid=${apiKey}&units=${weatherApp.units}`
@@ -35,6 +37,7 @@ const weatherApp = {
       }
       const weatherData = await urlForeCast.json();
       weatherApp.showWeather(weatherData);
+      weatherApp.hideBackDrop();
     } catch (err) {
       console.error(err);
     }
@@ -46,12 +49,11 @@ const weatherApp = {
       const urlDirect = await fetch(
         `http://api.openweathermap.org/geo/1.0/direct?q=${cityName}&appid=${apiKey}&units=${weatherApp.units}&limit=5`
       );
-      if (urlDirect.ok) {
-        const geoData = await urlDirect.json();
-        weatherApp.showLocation(geoData);
-      } else {
+      if (!urlDirect.ok) {
         throw new Error("Couldn't find lat and lon data");
       }
+      const geoData = await urlDirect.json();
+      weatherApp.showLocation(geoData);
     } catch (err) {
       console.error(err);
     }
@@ -89,8 +91,12 @@ const weatherApp = {
   },
 
   showWeather(data) {
-    const firstSection = document.querySelector('.weather-info');
+    console.log(data);
+    const weatherInfo = document.querySelector('.weather-info');
     const imgSrc = `http://openweathermap.org/img/w/${data.weather[0].icon}.png`;
+    if (weatherInfo.childNodes.length) {
+      weatherInfo.replaceChildren();
+    }
     const markup = `
                    <img class="weather-img" src=${imgSrc} alt="weather image" />
                    <p class="weather-description">${
@@ -117,7 +123,7 @@ const weatherApp = {
                      data.timezone
                    )}</p>
                    `;
-    firstSection.insertAdjacentHTML('afterbegin', markup);
+    weatherInfo.insertAdjacentHTML('afterbegin', markup);
   },
 
   convertTempUnits() {
@@ -144,6 +150,18 @@ const weatherApp = {
       ? (this.textContent = '°F')
       : (this.textContent = '°C');
     weatherApp.tempSwitch = !weatherApp.tempSwitch;
+  },
+
+  showBackDrop() {
+    const backDrop = document.querySelector('.backdrop');
+
+    backDrop.classList.remove('d-none');
+  },
+
+  hideBackDrop() {
+    const backDrop = document.querySelector('.backdrop');
+
+    backDrop.classList.add('d-none');
   },
 
   getCurrentDay(dt, timezone) {
