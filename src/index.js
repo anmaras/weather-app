@@ -129,7 +129,9 @@ const weatherApp = {
 
   renderWeatherExtraData(data) {
     const weatherData = document.querySelector('.weather-data');
-
+    if (weatherData.childNodes.length) {
+      weatherData.replaceChildren();
+    }
     const dataMarkup = `
                     <p class="humidity">
                        Humidity<span class="d-block">${data.current.humidity}%</span>
@@ -175,7 +177,6 @@ const weatherApp = {
       </p>
       </li>
       `;
-
         forecast.insertAdjacentHTML('afterbegin', markupForecast);
       });
   },
