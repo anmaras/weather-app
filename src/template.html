@@ -20,24 +20,37 @@
       </div>
       <button class="units-btn">°F</button>
     </header>
-    <main class="grid">
+    <main class="main-container grid">
       <div class="backdrop d-none">
         <div class="loading"></div>
       </div>
       <section
-        id="current-section"
+        class="current-section grid"
         style="background-color: rgb(252, 181, 181)"
       >
-        <div class="current-weather"></div>
+        <ul class="current-weather grid"></ul>
       </section>
-      <section id="hourly-section" style="background-color: rgb(172, 172, 255)">
-        <div class="hourly-weather flex"></div>
+      <section class="description-section grid">
+        <p class="weather-description grid-container"></p>
       </section>
-      <section id="data-section" style="background-color: rgb(255, 255, 165)">
-        <div class="weather-data"></div>
+      <section
+        class="hourly-section grid"
+        style="background-color: rgb(172, 172, 255)"
+      >
+        <ul class="hourly-weather flex"></ul>
       </section>
-      <section id="daily-section" style="background-color: rgb(164, 255, 164)">
-        <div class="weather-daily"></div>
+
+      <section
+        class="data-section grid-container"
+        style="background-color: rgb(255, 255, 165)"
+      >
+        <ul class="weather-data flex"></ul>
+      </section>
+      <section
+        class="daily-section grid"
+        style="background-color: rgb(164, 255, 164)"
+      >
+        <ul class="daily-weather grid"></ul>
       </section>
     </main>
   </body>
