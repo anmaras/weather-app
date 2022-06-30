@@ -324,6 +324,13 @@ select {
   justify-self: right;
 }
 
+.hourly-weather {
+  max-width: 100vw;
+  overflow: scroll;
+  flex-direction: row-reverse;
+  /* max-width: 50%; */
+}
+
 @media (min-width: 45rem) {
   .header {
     grid-auto-flow: column;
@@ -332,5 +339,18 @@ select {
   }
   .search-wrapper {
     width: 80%;
+  }
+
+  main {
+    grid-template-columns: 1fr 1fr;
+  }
+  #data-section {
+    grid-column: 1/-1;
+    grid-row: 2/3;
+  }
+
+  #daily-section {
+    grid-column: 1/-1;
+    grid-row: 3/4;
   }
 }
