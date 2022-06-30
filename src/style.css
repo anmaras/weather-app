@@ -63,7 +63,7 @@ h3,
 h4,
 h5,
 p,
-figure,
+li figure,
 picture {
   margin: 0;
 }
@@ -76,6 +76,11 @@ h5,
 h6,
 p {
   font-weight: 400;
+}
+
+li {
+  list-style: none;
+  padding: 0;
 }
 
 /* set up the body */
@@ -308,6 +313,15 @@ select {
 /* ----MAIN-------- */
 /* ---------------- */
 
+.main-container {
+  --gap: 0;
+}
+
+.current-weather {
+  justify-content: start;
+  --gap: 0;
+}
+
 .hourly-weather {
   overflow: auto;
   flex-direction: row-reverse;
@@ -341,15 +355,21 @@ select {
 
   .main-container {
     grid-template-columns: 1fr 2fr;
+    grid-auto-rows: auto;
   }
 
-  .data-section {
+  .description-section {
     grid-column: 1/-1;
     grid-row: 2/3;
   }
 
-  .daily-section {
+  .data-section {
     grid-column: 1/-1;
     grid-row: 3/4;
+  }
+
+  .daily-section {
+    grid-column: 1/-1;
+    grid-row: 4/5;
   }
 }
