@@ -142,9 +142,9 @@ const weatherApp = {
     if (forecast.childNodes.length) {
       forecast.replaceChildren();
     }
-    hData.list
+    hData.hourly
       .filter((fItem) => {
-        let today = weatherApp.getTime(fItem.dt, hData.city.timezone);
+        let today = weatherApp.getTodayTime(fItem.dt, hData.timezone_offset);
         if (isToday(new Date(today))) {
           return fItem;
         }
@@ -152,15 +152,15 @@ const weatherApp = {
       .forEach((fItem) => {
         const imgSrc = `http://openweathermap.org/img/wn/${fItem.weather[0].icon}@2x.png`;
         const markupForecast = `
-        <div><p>${fItem.dt_txt.slice(10, 16)}</p>
-        <p>${fItem.weather[0].main}</p>
-        <img class="weather-img" src=${imgSrc} alt="weather image" />
-        <p><span class="temp">${fItem.main.temp}</span><span class="unit">${
+      <div><p>${this.getTodayForecastTime(fItem.dt, hData.timezone_offset)}</p>
+      <p>${fItem.weather[0].main}</p>
+      <img class="weather-img" src=${imgSrc} alt="weather image" />
+      <p><span class="temp">${fItem.temp}</span><span class="unit">${
           this.unitsType
         }</span>
-        </p>
-        </div>
-        `;
+      </p>
+      </div>
+      `;
 
         forecast.insertAdjacentHTML('afterbegin', markupForecast);
       });
@@ -215,8 +215,12 @@ const weatherApp = {
     return format(new Date(fromUnixTime(dt - timezone)), 'EEEE');
   },
 
-  getTime(dt, timezone) {
+  getTodayTime(dt, timezone) {
     return new Date(fromUnixTime(dt - timezone));
+  },
+
+  getTodayForecastTime(dt, timezone) {
+    return format(new Date(fromUnixTime(dt - timezone)), 'HH:mm');
   },
 
   getSunRise(sunrise) {
