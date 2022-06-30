@@ -16,30 +16,26 @@
           id="search"
           placeholder="type a city name"
         />
-        <ul class="geo-locations"></ul>
         <button class="search-btn">Search</button>
       </div>
       <button class="units-btn">°F</button>
     </header>
-    <main></main>
-    <!-- Loading -->
-    <div class="backdrop d-none">
-      s
-      <div class="loading"></div>
-    </div>
-    <!-- Weather info -->
-    <section>
-      <div class="weather-info"></div>
-    </section>
-
-    <!-- Weather Data -->
-    <section>
-      <div class="weather-data"></div>
-    </section>
-
-    <!-- Weather Forecast -->
-    <section>
-      <div class="weather-forecast"></div>
-    </section>
+    <main class="grid">
+      <div class="backdrop d-none">
+        <div class="loading"></div>
+      </div>
+      <section>
+        <div class="current-weather"></div>
+      </section>
+      <section>
+        <div class="hourly-weather"></div>
+      </section>
+      <section>
+        <div class="weather-data"></div>
+      </section>
+      <section>
+        <div class="weather-daily"></div>
+      </section>
+    </main>
   </body>
 </html>
