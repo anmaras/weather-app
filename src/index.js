@@ -8,8 +8,7 @@ import logoIcon from './assets/icons/logo/github.png';
 const weatherApp = {
   tempSwitch: true,
   unitsType: '℃',
-  defaultLat: 38.0657,
-  defaultLon: 23.7628,
+  defaultCity: 'Athens',
 
   init() {
     const buttonSearch = document.querySelector('.search-btn');
@@ -20,17 +19,13 @@ const weatherApp = {
     buttonFahrenheit.addEventListener('click', weatherApp.convertTempUnits);
     buttonSearch.addEventListener('click', weatherApp.getData);
 
-    this.fetchWeather();
+    weatherApp.getData();
   },
 
   async fetchWeather(lat, lon) {
-    const defaultLat = 38.0657;
-    const defaultLon = 23.7628;
     try {
       const test = await fetch(
-        `https://api.openweathermap.org/data/2.5/onecall?lat=${
-          lat || defaultLat
-        }&lon=${lon || defaultLon}&appid=${key}&units=metric`
+        `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&appid=${key}&units=metric`
       );
 
       if (!test.ok) {
@@ -45,7 +40,8 @@ const weatherApp = {
   },
 
   async fetchLocation() {
-    const cityName = document.querySelector('#search').value;
+    const cityName =
+      document.querySelector('#search').value || weatherApp.defaultCity;
     try {
       const urlDirect = await fetch(
         `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${apiKey}&units=metric`
@@ -76,14 +72,17 @@ const weatherApp = {
   /* Test */
 
   renderCurrentWeather(data, city) {
-    const weatherInfo = document.querySelector('.weather-info');
-    const weatherData = document.querySelector('.weather-data');
+    const currentWeather = document.querySelector('.current-weather');
+    const weatherExtraData = document.querySelector('.weather-data');
     const imgSrc = `http://openweathermap.org/img/wn/${data.current.weather[0].icon}@2x.png`;
-    if (weatherInfo.childNodes.length || weatherData.childNodes.length) {
-      weatherInfo.replaceChildren();
-      weatherData.replaceChildren();
+    if (
+      currentWeather.childNodes.length ||
+      weatherExtraData.childNodes.length
+    ) {
+      currentWeather.replaceChildren();
+      weatherExtraData.replaceChildren();
     }
-    const markupInfo = `
+    const currentWeatherMarkup = `
                    <img class="weather-img" src=${imgSrc} alt="weather image" />
                    <p class="weather-description">${
                      data.current.weather[0].description
@@ -117,17 +116,17 @@ const weatherApp = {
                        Pressure<span class="d-block">${data.current.pressure} hPa</span>
                     </p>
                     <p class="temp-max">
-                       Max temp <span class="temp">${data.current.temp_max}</span
+                       Max temp <span class="temp">${data.daily[0].temp.max}</span
                           ><span class="unit"> ${this.unitsType}</span>
                     </p>
                     <p class="temp-low">
-                       Low temp <span class="temp">${data.current.temp_min}</span
+                       Low temp <span class="temp">${data.daily[0].temp.min}</span
                           ><span class="unit"> ${this.unitsType}</span>
                     </p>
                     `;
 
-    weatherInfo.insertAdjacentHTML('afterbegin', markupInfo);
-    weatherData.insertAdjacentHTML('afterbegin', markupData);
+    currentWeather.insertAdjacentHTML('afterbegin', currentWeatherMarkup);
+    weatherExtraData.insertAdjacentHTML('afterbegin', markupData);
   },
 
   renderForecast(fData) {
