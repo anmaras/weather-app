@@ -1,9 +1,9 @@
 import './style.css';
-import apiKey from './api/key.js';
+import { apiKey, key } from './api/key.js';
 import fromUnixTime from 'date-fns/fromUnixTime';
 import format from 'date-fns/format';
 import isToday from 'date-fns/isToday';
-import logo from './assets/icons/logo/github.png';
+import logoIcon from './assets/icons/logo/github.png';
 
 const weatherApp = {
   tempSwitch: true,
@@ -15,109 +15,68 @@ const weatherApp = {
     const buttonSearch = document.querySelector('.search-btn');
     const buttonFahrenheit = document.querySelector('.units-btn');
     const searchInput = document.querySelector('.search-input');
+    document.querySelector('.header-logo').src = logoIcon;
+
     buttonFahrenheit.addEventListener('click', weatherApp.convertTempUnits);
-    document.querySelector('.header-logo').src = logo;
-    // searchInput.addEventListener(
-    //   'keypress',
-    //   weatherApp.toggleLocationListVisibility
-    // );
+    buttonSearch.addEventListener('click', weatherApp.getData);
 
-    buttonSearch.addEventListener('click', () => {
-      this.toggleLocationListVisibility();
-      weatherApp.getLocationOptions();
-    });
-
-    this.getCurrentAndForCastWeather();
-    this.selectLocation();
-    this.showBackDrop();
+    this.fetchWeather();
   },
 
-  async getCurrentAndForCastWeather() {
-    weatherApp.showBackDrop();
+  async fetchWeather(lat, lon) {
+    const defaultLat = 38.0657;
+    const defaultLon = 23.7628;
     try {
-      // const test = await fetch(
-      //   `https://api.openweathermap.org/data/2.5/onecall?lat=${weatherApp.defaultLat}&lon=${weatherApp.defaultLon}&appid=04d4d495e39f2311c4acd1148b6e2130`
-      // );
-      const urlCurrent = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?&lat=${weatherApp.defaultLat}&lon=${weatherApp.defaultLon}&appid=${apiKey}&units=metric`
+      const test = await fetch(
+        `https://api.openweathermap.org/data/2.5/onecall?lat=${
+          lat || defaultLat
+        }&lon=${lon || defaultLon}&appid=${key}&units=metric`
       );
-      const urlForecast = await fetch(
-        `https://api.openweathermap.org/data/2.5/forecast?&lat=${weatherApp.defaultLat}&lon=${weatherApp.defaultLon}&appid=${apiKey}&units=metric`
-      );
-      if (!urlCurrent.ok && !urlForecast.ok) {
+
+      if (!test.ok) {
         throw new Error("Couldn't find city name");
       }
-      // const anotherTest = await test.json();
+      const weatherData = await test.json();
 
-      const currentData = await urlCurrent.json();
-      const forecastData = await urlForecast.json();
-      weatherApp.renderCurrentWeather(currentData);
-      weatherApp.renderForecast(forecastData);
-      weatherApp.hideBackDrop();
+      return weatherData;
     } catch (err) {
       console.error(err);
     }
   },
 
-  async getLocationOptions() {
+  async fetchLocation() {
     const cityName = document.querySelector('#search').value;
     try {
       const urlDirect = await fetch(
-        `http://api.openweathermap.org/geo/1.0/direct?q=${cityName}&appid=${apiKey}&units=${weatherApp.units}&limit=5`
+        `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${apiKey}&units=metric`
       );
-      // const urlDirect = await fetch(
-      //   `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${apiKey}`
-      // );
       if (!urlDirect.ok) {
-        throw new Error("Couldn't find lat and lon data");
+        throw new Error(
+          "Couldn't find lat and lon data need, to search for a city"
+        );
       }
-      const geoData = await urlDirect.json();
-      weatherApp.renderLocation(geoData);
+      const locationData = await urlDirect.json();
+      return locationData;
     } catch (err) {
       console.error(err);
     }
   },
 
-  renderLocation(data) {
-    const locations = document.querySelector('.geo-locations');
-    if (locations.childNodes.length) {
-      locations.replaceChildren();
-    }
-    data.map((location) => {
-      let markup = `<li class="">
-      <p><span class="location-name">${
-        location.name
-      }</span> <span class="location-lat d-none">${location.lat}</span>
-      <span class="location-lon d-none">${location.lon}</span>
-      ${location.state || ''} ,${location.country} </p>
-      </li>`;
-      locations.insertAdjacentHTML('afterbegin', markup);
-    });
+  async getData() {
+    const location = await weatherApp.fetchLocation();
+    const lat = location.coord.lat;
+    const lon = location.coord.lon;
+    const weatherData = await weatherApp.fetchWeather(lat, lon);
+
+    console.log(weatherData);
+    console.log(location);
+    weatherApp.renderCurrentWeather(weatherData, location);
   },
 
-  selectLocation() {
-    document.querySelector('.geo-locations').addEventListener('click', (e) => {
-      const target = e.target.closest('p');
-      if (target) {
-        const selectionLat = target.querySelector('.location-lat');
-        const selectionLon = target.querySelector('.location-lon');
-
-        this.defaultLat = selectionLat.textContent;
-        this.defaultLon = selectionLon.textContent;
-      }
-      /* fetch weather after user click on selection */
-
-      document.querySelector('.geo-locations').classList.add('d-none');
-
-      // document.querySelector('#search').value = '';
-      this.getCurrentAndForCastWeather();
-    });
-  },
-
-  renderCurrentWeather(data) {
+  renderCurrentWeather(data, city) {
     const weatherInfo = document.querySelector('.weather-info');
     const weatherData = document.querySelector('.weather-data');
-    const imgSrc = `http://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
+    const imgSrc = `http://openweathermap.org/img/wn/${data.current.weather[0].icon}@2x.png`;
     if (weatherInfo.childNodes.length || weatherData.childNodes.length) {
       weatherInfo.replaceChildren();
       weatherData.replaceChildren();
@@ -125,42 +84,42 @@ const weatherApp = {
     const markupInfo = `
                    <img class="weather-img" src=${imgSrc} alt="weather image" />
                    <p class="weather-description">${
-                     data.weather[0].description
+                     data.current.weather[0].description
                    }</p>
-                   <p class="city-name">${data.name}, ${data.sys.country}</p>
+                   <p class="city-name">${city.name}, ${city.sys.country}</p>
                    <p class="weather-temp"><span class="temp">${
-                     data.main.temp
+                     data.current.temp
                    }</span><span class="unit">${this.unitsType}</span>
                    </p>
                    <p class="feels-like">Feels Like <span class='temp'>${
-                     data.main.feels_like
+                     data.current.feels_like
                    }</span><span class="unit">${this.unitsType}</span>
                    </p>
                    <p class="sunrise">Sunrise at ${this.getSunRise(
-                     data.sys.sunrise
+                     city.sys.sunrise
                    )}</p>
                    <p class="sunset">Sunset at ${this.getSunRise(
-                     data.sys.sunset
+                     city.sys.sunset
                    )}</p>
                    <p class="current-time">Local time is ${this.getCurrentTime()}</p>
                    <p class="current-day"> ${this.getCurrentDay(
-                     data.dt,
-                     data.timezone
+                     city.dt,
+                     city.timezone
                    )}</p>
                    `;
     const markupData = `
                     <p class="humidity">
-                       Humidity<span class="d-block">${data.main.humidity}%</span>
+                       Humidity<span class="d-block">${data.current.humidity}%</span>
                     </p>
                     <p class="pressure">
-                       Pressure<span class="d-block">${data.main.pressure} hPa</span>
+                       Pressure<span class="d-block">${data.current.pressure} hPa</span>
                     </p>
                     <p class="temp-max">
-                       Max temp <span class="temp">${data.main.temp_max}</span
+                       Max temp <span class="temp">${data.current.temp_max}</span
                           ><span class="unit"> ${this.unitsType}</span>
                     </p>
                     <p class="temp-low">
-                       Low temp <span class="temp">${data.main.temp_min}</span
+                       Low temp <span class="temp">${data.current.temp_min}</span
                           ><span class="unit"> ${this.unitsType}</span>
                     </p>
                     `;
