@@ -73,6 +73,8 @@ const weatherApp = {
     weatherApp.renderCurrentWeather(weatherData, location);
   },
 
+  /* Test */
+
   renderCurrentWeather(data, city) {
     const weatherInfo = document.querySelector('.weather-info');
     const weatherData = document.querySelector('.weather-data');
