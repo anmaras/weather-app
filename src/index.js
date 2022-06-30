@@ -17,9 +17,9 @@ const weatherApp = {
     document.querySelector('.header-logo').src = logoIcon;
 
     buttonFahrenheit.addEventListener('click', weatherApp.convertTempUnits);
-    buttonSearch.addEventListener('click', weatherApp.getData);
+    buttonSearch.addEventListener('click', weatherApp.renderWeatherHandler);
 
-    weatherApp.getData();
+    weatherApp.renderWeatherHandler();
   },
 
   async fetchWeather(lat, lon) {
@@ -60,16 +60,25 @@ const weatherApp = {
 
   async getData() {
     const location = await weatherApp.fetchLocation();
-    const lat = location.coord.lat;
-    const lon = location.coord.lon;
-    const weatherData = await weatherApp.fetchWeather(lat, lon);
+    const weatherData = await weatherApp.fetchWeather(
+      location.coord.lat,
+      location.coord.lon
+    );
 
-    console.log(weatherData);
-    console.log(location);
-    weatherApp.renderCurrentWeather(weatherData, location);
+    return { location, weatherData };
   },
 
-  /* Test */
+  async renderWeatherHandler() {
+    weatherApp.showBackDrop();
+    const locationAndWeatherData = await weatherApp.getData();
+    weatherApp.hideBackDrop();
+    const { location, weatherData } = locationAndWeatherData;
+
+    console.log(location, weatherData);
+
+    weatherApp.renderCurrentWeather(weatherData, location);
+    weatherApp.renderHourlyForecast(weatherData);
+  },
 
   renderCurrentWeather(data, city) {
     const currentWeather = document.querySelector('.current-weather');
@@ -83,15 +92,24 @@ const weatherApp = {
       weatherExtraData.replaceChildren();
     }
     const currentWeatherMarkup = `
+    <p class="current-day"> ${this.getCurrentDay(city.dt, city.timezone)}</p>
                    <img class="weather-img" src=${imgSrc} alt="weather image" />
+                   <p class="city-name">${city.name}, ${city.sys.country}</p>
                    <p class="weather-description">${
                      data.current.weather[0].description
                    }</p>
-                   <p class="city-name">${city.name}, ${city.sys.country}</p>
                    <p class="weather-temp"><span class="temp">${
                      data.current.temp
                    }</span><span class="unit">${this.unitsType}</span>
                    </p>
+                   <p class="temp-max">
+                       H:<span class="temp">${data.daily[0].temp.max}</span
+                          ><span class="unit"> ${this.unitsType}</span>
+                    </p>
+                    <p class="temp-low">
+                       L: <span class="temp">${data.daily[0].temp.min}</span
+                          ><span class="unit"> ${this.unitsType}</span>
+                    </p>
                    <p class="feels-like">Feels Like <span class='temp'>${
                      data.current.feels_like
                    }</span><span class="unit">${this.unitsType}</span>
@@ -103,10 +121,7 @@ const weatherApp = {
                      city.sys.sunset
                    )}</p>
                    <p class="current-time">Local time is ${this.getCurrentTime()}</p>
-                   <p class="current-day"> ${this.getCurrentDay(
-                     city.dt,
-                     city.timezone
-                   )}</p>
+                   
                    `;
     const markupData = `
                     <p class="humidity">
@@ -115,28 +130,21 @@ const weatherApp = {
                     <p class="pressure">
                        Pressure<span class="d-block">${data.current.pressure} hPa</span>
                     </p>
-                    <p class="temp-max">
-                       Max temp <span class="temp">${data.daily[0].temp.max}</span
-                          ><span class="unit"> ${this.unitsType}</span>
-                    </p>
-                    <p class="temp-low">
-                       Low temp <span class="temp">${data.daily[0].temp.min}</span
-                          ><span class="unit"> ${this.unitsType}</span>
-                    </p>
+                    
                     `;
 
     currentWeather.insertAdjacentHTML('afterbegin', currentWeatherMarkup);
     weatherExtraData.insertAdjacentHTML('afterbegin', markupData);
   },
 
-  renderForecast(fData) {
-    const forecast = document.querySelector('.weather-forecast');
+  renderHourlyForecast(hData) {
+    const forecast = document.querySelector('.hourly-weather');
     if (forecast.childNodes.length) {
       forecast.replaceChildren();
     }
-    fData.list
+    hData.list
       .filter((fItem) => {
-        let today = weatherApp.getCurrentTest(fItem.dt, fData.city.timezone);
+        let today = weatherApp.getTime(fItem.dt, hData.city.timezone);
         if (isToday(new Date(today))) {
           return fItem;
         }
@@ -207,7 +215,7 @@ const weatherApp = {
     return format(new Date(fromUnixTime(dt - timezone)), 'EEEE');
   },
 
-  getCurrentTest(dt, timezone) {
+  getTime(dt, timezone) {
     return new Date(fromUnixTime(dt - timezone));
   },
 
