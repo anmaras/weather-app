@@ -3,37 +3,51 @@ import apiKey from './api/key.js';
 import fromUnixTime from 'date-fns/fromUnixTime';
 import format from 'date-fns/format';
 import isToday from 'date-fns/isToday';
+import logo from './assets/icons/logo/github.png';
 
 const weatherApp = {
   tempSwitch: true,
-  defaultCity: 'athens',
   unitsType: '℃',
-  defaultLat: 37.9755,
-  defaultLon: 23.7349,
+  defaultLat: 38.0657,
+  defaultLon: 23.7628,
 
   init() {
     const buttonSearch = document.querySelector('.search-btn');
-    const buttonFahrenheit = document.querySelector('.fahrenheit');
+    const buttonFahrenheit = document.querySelector('.units-btn');
+    const searchInput = document.querySelector('.search-input');
     buttonFahrenheit.addEventListener('click', weatherApp.convertTempUnits);
+    document.querySelector('.header-logo').src = logo;
+    // searchInput.addEventListener(
+    //   'keypress',
+    //   weatherApp.toggleLocationListVisibility
+    // );
 
-    buttonSearch.addEventListener('click', weatherApp.getLocationOptions);
+    buttonSearch.addEventListener('click', () => {
+      this.toggleLocationListVisibility();
+      weatherApp.getLocationOptions();
+    });
+
     this.getCurrentAndForCastWeather();
     this.selectLocation();
-    // this.showBackDrop();
+    this.showBackDrop();
   },
 
   async getCurrentAndForCastWeather() {
     weatherApp.showBackDrop();
     try {
+      // const test = await fetch(
+      //   `https://api.openweathermap.org/data/2.5/onecall?lat=${weatherApp.defaultLat}&lon=${weatherApp.defaultLon}&appid=04d4d495e39f2311c4acd1148b6e2130`
+      // );
       const urlCurrent = await fetch(
         `https://api.openweathermap.org/data/2.5/weather?&lat=${weatherApp.defaultLat}&lon=${weatherApp.defaultLon}&appid=${apiKey}&units=metric`
       );
       const urlForecast = await fetch(
         `https://api.openweathermap.org/data/2.5/forecast?&lat=${weatherApp.defaultLat}&lon=${weatherApp.defaultLon}&appid=${apiKey}&units=metric`
       );
-      if (!urlCurrent.ok && !urlForecast) {
+      if (!urlCurrent.ok && !urlForecast.ok) {
         throw new Error("Couldn't find city name");
       }
+      // const anotherTest = await test.json();
 
       const currentData = await urlCurrent.json();
       const forecastData = await urlForecast.json();
@@ -51,6 +65,9 @@ const weatherApp = {
       const urlDirect = await fetch(
         `http://api.openweathermap.org/geo/1.0/direct?q=${cityName}&appid=${apiKey}&units=${weatherApp.units}&limit=5`
       );
+      // const urlDirect = await fetch(
+      //   `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${apiKey}`
+      // );
       if (!urlDirect.ok) {
         throw new Error("Couldn't find lat and lon data");
       }
@@ -67,12 +84,12 @@ const weatherApp = {
       locations.replaceChildren();
     }
     data.map((location) => {
-      let markup = `<li>
+      let markup = `<li class="">
       <p><span class="location-name">${
         location.name
-      }</span> <span class="location-lat d-none">${location.lat}</span> 
-      <span class="location-lon d-none">${location.lon}</span> 
-      ${location.state || ''} ${location.country} </p>
+      }</span> <span class="location-lat d-none">${location.lat}</span>
+      <span class="location-lon d-none">${location.lon}</span>
+      ${location.state || ''} ,${location.country} </p>
       </li>`;
       locations.insertAdjacentHTML('afterbegin', markup);
     });
@@ -89,15 +106,18 @@ const weatherApp = {
         this.defaultLon = selectionLon.textContent;
       }
       /* fetch weather after user click on selection */
-      weatherApp.getCurrentAndForCastWeather();
+
+      document.querySelector('.geo-locations').classList.add('d-none');
+
+      // document.querySelector('#search').value = '';
+      this.getCurrentAndForCastWeather();
     });
   },
 
   renderCurrentWeather(data) {
-    console.log(data);
     const weatherInfo = document.querySelector('.weather-info');
     const weatherData = document.querySelector('.weather-data');
-    const imgSrc = `http://openweathermap.org/img/w/${data.weather[0].icon}.png`;
+    const imgSrc = `http://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
     if (weatherInfo.childNodes.length || weatherData.childNodes.length) {
       weatherInfo.replaceChildren();
       weatherData.replaceChildren();
@@ -151,24 +171,23 @@ const weatherApp = {
 
   renderForecast(fData) {
     const forecast = document.querySelector('.weather-forecast');
-
     if (forecast.childNodes.length) {
       forecast.replaceChildren();
     }
-    const todayForecast = fData.list
+    fData.list
       .filter((fItem) => {
         let today = weatherApp.getCurrentTest(fItem.dt, fData.city.timezone);
         if (isToday(new Date(today))) {
           return fItem;
         }
       })
-      .forEach((tFItem) => {
-        const imgSrc = `http://openweathermap.org/img/w/${tFItem.weather[0].icon}.png`;
+      .forEach((fItem) => {
+        const imgSrc = `http://openweathermap.org/img/wn/${fItem.weather[0].icon}@2x.png`;
         const markupForecast = `
-        <div><p>${tFItem.dt_txt.slice(10, 16)}</p>
-        <p>${tFItem.weather[0].main}</p>
+        <div><p>${fItem.dt_txt.slice(10, 16)}</p>
+        <p>${fItem.weather[0].main}</p>
         <img class="weather-img" src=${imgSrc} alt="weather image" />
-        <p><span class="temp">${tFItem.main.temp}</span><span class="unit">${
+        <p><span class="temp">${fItem.main.temp}</span><span class="unit">${
           this.unitsType
         }</span>
         </p>
@@ -215,6 +234,13 @@ const weatherApp = {
     const backDrop = document.querySelector('.backdrop');
 
     backDrop.classList.add('d-none');
+  },
+
+  toggleLocationListVisibility() {
+    const list = document.querySelector('.geo-locations');
+    if (list.classList.contains('d-none')) {
+      list.classList.toggle('d-none');
+    }
   },
 
   getCurrentDay(dt, timezone) {

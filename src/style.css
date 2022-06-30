@@ -82,17 +82,13 @@ p {
 body {
   font-family: var(--ff-san-serif);
   font-size: var(--fs-400);
-  color: rgb(var(--clr-white));
-  background-color: rgb(var(--clr-dark));
+  color: rgb(var(--clr-dark));
+  background-color: rgb(var(--clr-white));
   line-height: 1.5;
   min-height: 100vh;
-  display: grid;
 }
 
 @media (min-width: 45rem) {
-  body {
-    grid-template-columns: repeat(2, auto);
-  }
 }
 
 /* make images easier to work with */
@@ -140,6 +136,10 @@ select {
 
 .d-block {
   display: block;
+}
+
+.d-inline {
+  display: inline;
 }
 
 .d-none {
@@ -268,5 +268,69 @@ select {
   }
   to {
     transform: rotate(360deg);
+  }
+}
+
+.header {
+  padding-inline: 1rem;
+  padding-block: 2rem;
+  align-items: center;
+  background-color: rgb(var(--clr-dark));
+}
+
+.header-logo {
+  min-width: 100px;
+  justify-self: left;
+}
+
+.search-wrapper {
+  position: relative;
+  grid-template-columns: 1fr max-content;
+  --gap: 0;
+}
+
+.search-input {
+  grid-column: 1/2;
+}
+
+.search-btn {
+  grid-column: 2/-1;
+}
+
+.geo-locations {
+  position: absolute;
+  width: 100%;
+  grid-column: 1/2;
+  grid-row: 2/3;
+  top: -19px;
+  border: 1px solid rgb(var(--clr-light));
+  border-top: none;
+  background-color: rgb(var(--clr-white));
+}
+
+.geo-locations > li {
+  width: 100%;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  color: rgb(var(--clr-dark));
+}
+.geo-locations > li:hover {
+  cursor: pointer;
+  background-color: rgb(var(--clr-light));
+}
+.units-btn {
+  padding-inline: 1.4rem;
+  justify-self: right;
+}
+
+@media (min-width: 45rem) {
+  .header {
+    grid-auto-flow: column;
+    justify-items: center;
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+  .search-wrapper {
+    width: 80%;
   }
 }
