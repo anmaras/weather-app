@@ -79,25 +79,21 @@ const weatherApp = {
     weatherApp.renderCurrentWeather(weatherData, location);
     weatherApp.renderHourlyForecast(weatherData);
     weatherApp.renderDailyForecast(weatherData);
+    weatherApp.renderWeatherExtraData(weatherData);
   },
 
   renderCurrentWeather(data, city) {
     const currentWeather = document.querySelector('.current-weather');
-    const weatherExtraData = document.querySelector('.weather-data');
     const imgSrc = `http://openweathermap.org/img/wn/${data.current.weather[0].icon}@2x.png`;
-    if (
-      currentWeather.childNodes.length ||
-      weatherExtraData.childNodes.length
-    ) {
+    if (currentWeather.childNodes.length) {
       currentWeather.replaceChildren();
-      weatherExtraData.replaceChildren();
     }
     const currentWeatherMarkup = `
     <p class="current-day"> ${this.getCurrentDay(city.dt, city.timezone)}</p>
                    <img class="weather-img" src=${imgSrc} alt="weather image" />
                    <p class="city-name">${city.name}, ${city.sys.country}</p>
                    <p class="weather-description">${
-                     data.current.weather[0].description
+                     data.current.weather[0].main
                    }</p>
                    <p class="weather-temp"><span class="temp">${this.roundTempValue(
                      data.current.temp
@@ -128,16 +124,28 @@ const weatherApp = {
                    <p class="current-time">Local time is ${this.getCurrentTime()}</p>
                    `;
 
-    const markupData = `
+    currentWeather.insertAdjacentHTML('afterbegin', currentWeatherMarkup);
+  },
+
+  renderWeatherExtraData(data) {
+    const weatherData = document.querySelector('.weather-data');
+
+    const dataMarkup = `
                     <p class="humidity">
                        Humidity<span class="d-block">${data.current.humidity}%</span>
                     </p>
                     <p class="pressure">
                        Pressure<span class="d-block">${data.current.pressure} hPa</span>
                     </p>
+                    <p class="uvi">
+                       UV Index<span class="d-block">${data.current.uvi}</span>
+                    </p>
+                    <p class="wind-speed">
+                       Wind Speed<span class="d-block">${data.current.wind_speed} km/h</span>
+                    </p>
                     `;
-    currentWeather.insertAdjacentHTML('afterbegin', currentWeatherMarkup);
-    weatherExtraData.insertAdjacentHTML('afterbegin', markupData);
+
+    weatherData.insertAdjacentHTML('afterbegin', dataMarkup);
   },
 
   renderHourlyForecast(hData) {
@@ -155,17 +163,17 @@ const weatherApp = {
       .forEach((fItem) => {
         const imgSrc = `http://openweathermap.org/img/wn/${fItem.weather[0].icon}@2x.png`;
         const markupForecast = `
-      <div><p>${this.getTodayForecastTime(fItem.dt, hData.timezone_offset)}</p>
+      <li><p>${this.getTodayForecastTime(fItem.dt, hData.timezone_offset)}</p>
       <p>${fItem.weather[0].main}</p>
        <p>Humidity ${fItem.humidity}%</p>
         <p>Prop of Rain ${this.chanceOfRain(fItem.pop)}%</p>
 
       <img class="weather-img" src=${imgSrc} alt="weather image" />
-      <p><span class="temp">${this.roundTempValue()}</span><span class="unit">${
-          this.unitsType
-        }</span>
+      <p><span class="temp">${this.roundTempValue(
+        fItem.temp
+      )}</span><span class="unit">${this.unitsType}</span>
       </p>
-      </div>
+      </li>
       `;
 
         forecast.insertAdjacentHTML('afterbegin', markupForecast);
