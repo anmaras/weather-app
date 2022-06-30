@@ -80,6 +80,7 @@ const weatherApp = {
     weatherApp.renderHourlyForecast(weatherData);
     weatherApp.renderDailyForecast(weatherData);
     weatherApp.renderWeatherExtraData(weatherData);
+    weatherApp.renderWeatherDescription(weatherData, location);
   },
 
   renderCurrentWeather(data, city) {
@@ -89,42 +90,53 @@ const weatherApp = {
       currentWeather.replaceChildren();
     }
     const currentWeatherMarkup = `
-    <p class="current-day"> ${this.getCurrentDay(city.dt, city.timezone)}</p>
-                   <img class="weather-img" src=${imgSrc} alt="weather image" />
-                   <p class="city-name">${city.name}, ${city.sys.country}</p>
-                   <p class="weather-description">${
+    <li class="current-day"> ${this.getCurrentDay(city.dt, city.timezone)}</li>
+                   <li><img class="weather-img" src=${imgSrc} alt="weather image" /></li>
+                   <li class="city-name">${city.name}, ${city.sys.country}</li>
+                   <li class="current-description">${
                      data.current.weather[0].main
-                   }</p>
-                   <p class="weather-temp"><span class="temp">${this.roundTempValue(
+                   }</li>
+                   <li class="weather-temp"><span class="temp">${this.roundTempValue(
                      data.current.temp
                    )}</span><span class="unit">${this.unitsType}</span>
-                   </p>
-                   <p class="temp-max">
+                   </li>
+                   <li class="temp-max">
                        H:<span class="temp">${this.roundTempValue(
                          data.daily[0].temp.max
                        )}</span
                           ><span class="unit"> ${this.unitsType}</span>
-                    </p>
-                    <p class="temp-low">
+                    </li>
+                    <li class="temp-low">
                        L: <span class="temp">${this.roundTempValue(
                          data.daily[0].temp.min
                        )}</span
                           ><span class="unit"> ${this.unitsType}</span>
-                    </p>
-                   <p class="feels-like">Feels Like <span class='temp'>${this.roundTempValue(
+                    </li>
+                   <li class="feels-like">Feels Like <span class='temp'>${this.roundTempValue(
                      data.current.feels_like
                    )}</span><span class="unit">${this.unitsType}</span>
-                   </p>
-                   <p class="sunrise">Sunrise at ${this.getSunRise(
+                   </li>
+                   <li class="sunrise">Sunrise at ${this.getSunRise(
                      city.sys.sunrise
-                   )}</p>
-                   <p class="sunset">Sunset at ${this.getSunRise(
+                   )}</li>
+                   <li class="sunset">Sunset at ${this.getSunRise(
                      city.sys.sunset
-                   )}</p>
-                   <p class="current-time">Local time is ${this.getCurrentTime()}</p>
+                   )}</li>
+                   <li class="current-time">Local time is ${this.getCurrentTime()}</li>
                    `;
 
     currentWeather.insertAdjacentHTML('afterbegin', currentWeatherMarkup);
+  },
+
+  renderWeatherDescription(data, city) {
+    const weatherDescription = document.querySelector('.weather-description');
+    const currentWeatherMarkup = `
+                   Today in ${city.name} expect ${data.daily[0].weather[0].description}
+                   with the temperatures reaching ${data.daily[0].feels_like.day} at day 
+                   and ${data.daily[0].feels_like.night} at night.
+                   `;
+
+    weatherDescription.textContent = currentWeatherMarkup;
   },
 
   renderWeatherExtraData(data) {
@@ -156,9 +168,8 @@ const weatherApp = {
       forecast.replaceChildren();
     }
     hData.hourly
-      .filter((fItem) => {
-        let today = weatherApp.getTodayTime(fItem.dt, hData.timezone_offset);
-        if (isToday(new Date(today))) {
+      .filter((fItem, index) => {
+        if (index <= 24) {
           return fItem;
         }
       })
