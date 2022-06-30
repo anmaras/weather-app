@@ -78,6 +78,7 @@ const weatherApp = {
 
     weatherApp.renderCurrentWeather(weatherData, location);
     weatherApp.renderHourlyForecast(weatherData);
+    weatherApp.renderDailyForecast(weatherData);
   },
 
   renderCurrentWeather(data, city) {
@@ -98,21 +99,25 @@ const weatherApp = {
                    <p class="weather-description">${
                      data.current.weather[0].description
                    }</p>
-                   <p class="weather-temp"><span class="temp">${
+                   <p class="weather-temp"><span class="temp">${this.roundTempValue(
                      data.current.temp
-                   }</span><span class="unit">${this.unitsType}</span>
+                   )}</span><span class="unit">${this.unitsType}</span>
                    </p>
                    <p class="temp-max">
-                       H:<span class="temp">${data.daily[0].temp.max}</span
+                       H:<span class="temp">${this.roundTempValue(
+                         data.daily[0].temp.max
+                       )}</span
                           ><span class="unit"> ${this.unitsType}</span>
                     </p>
                     <p class="temp-low">
-                       L: <span class="temp">${data.daily[0].temp.min}</span
+                       L: <span class="temp">${this.roundTempValue(
+                         data.daily[0].temp.min
+                       )}</span
                           ><span class="unit"> ${this.unitsType}</span>
                     </p>
-                   <p class="feels-like">Feels Like <span class='temp'>${
+                   <p class="feels-like">Feels Like <span class='temp'>${this.roundTempValue(
                      data.current.feels_like
-                   }</span><span class="unit">${this.unitsType}</span>
+                   )}</span><span class="unit">${this.unitsType}</span>
                    </p>
                    <p class="sunrise">Sunrise at ${this.getSunRise(
                      city.sys.sunrise
@@ -121,8 +126,8 @@ const weatherApp = {
                      city.sys.sunset
                    )}</p>
                    <p class="current-time">Local time is ${this.getCurrentTime()}</p>
-                   
                    `;
+
     const markupData = `
                     <p class="humidity">
                        Humidity<span class="d-block">${data.current.humidity}%</span>
@@ -130,9 +135,7 @@ const weatherApp = {
                     <p class="pressure">
                        Pressure<span class="d-block">${data.current.pressure} hPa</span>
                     </p>
-                    
                     `;
-
     currentWeather.insertAdjacentHTML('afterbegin', currentWeatherMarkup);
     weatherExtraData.insertAdjacentHTML('afterbegin', markupData);
   },
@@ -154,8 +157,11 @@ const weatherApp = {
         const markupForecast = `
       <div><p>${this.getTodayForecastTime(fItem.dt, hData.timezone_offset)}</p>
       <p>${fItem.weather[0].main}</p>
+       <p>Humidity ${fItem.humidity}%</p>
+        <p>Prop of Rain ${this.chanceOfRain(fItem.pop)}%</p>
+
       <img class="weather-img" src=${imgSrc} alt="weather image" />
-      <p><span class="temp">${fItem.temp}</span><span class="unit">${
+      <p><span class="temp">${this.roundTempValue()}</span><span class="unit">${
           this.unitsType
         }</span>
       </p>
@@ -164,6 +170,32 @@ const weatherApp = {
 
         forecast.insertAdjacentHTML('afterbegin', markupForecast);
       });
+  },
+
+  renderDailyForecast(dData) {
+    const dailyForecast = document.querySelector('.daily-weather');
+    if (dailyForecast.childNodes.length) {
+      dailyForecast.replaceChildren();
+    }
+    dData.daily.forEach((fItem, index) => {
+      if (index > 0) {
+        const imgSrc = `http://openweathermap.org/img/wn/${fItem.weather[0].icon}@2x.png`;
+        const markupForecast = `
+        <li><p>${this.getCurrentDay(fItem.dt, dData.timezone_offset)}</p>
+        <p>${fItem.weather[0].main}</p>
+        <p>Humidity ${fItem.humidity}%</p>
+        <p>Prop of Rain ${this.chanceOfRain(fItem.pop)}%</p>
+        <img class="weather-img" src=${imgSrc} alt="weather image" />
+        <p><span class="temp">${this.roundTempValue(
+          fItem.temp.day
+        )}</span><span class="unit">${this.unitsType}</span>
+        </p>
+        </li>
+        `;
+
+        dailyForecast.insertAdjacentHTML('afterbegin', markupForecast);
+      }
+    });
   },
 
   convertTempUnits() {
@@ -237,11 +269,20 @@ const weatherApp = {
 
   convertCtoF(c) {
     const cToF = (c * 9) / 5 + 32;
-    return cToF.toFixed(2);
+    return cToF.toFixed(0);
   },
   convertFtoC(f) {
     const fToC = ((f - 32) * 5) / 9;
-    return fToC.toFixed(2);
+    return fToC.toFixed(0);
+  },
+
+  roundTempValue(temp) {
+    return Math.round(temp);
+  },
+
+  chanceOfRain(pop) {
+    const chanceOfRain = pop * 100;
+    return chanceOfRain.toFixed(0);
   },
 };
 
