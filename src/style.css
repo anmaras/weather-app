@@ -8,6 +8,8 @@
   --clr-light: 242, 242, 242;
   --clr-white: 255, 255, 255;
 
+  /* Padding Global */
+
   /* font-sizes */
   --fs-900: clamp(5rem, 8vw + 1rem, 9.375rem);
   --fs-800: 3.5rem;
@@ -89,9 +91,14 @@ body {
   font-family: var(--ff-san-serif);
   font-size: var(--fs-400);
   color: rgb(var(--clr-dark));
-  background-color: rgb(var(--clr-white));
+  background-color: rgb(var(--clr-dark));
   line-height: 1.5;
   min-height: 100vh;
+  padding: 1rem;
+  display: grid;
+  grid-auto-columns: 1fr;
+  grid-template-rows: max-content auto;
+  gap: 1rem;
 }
 
 @media (min-width: 45rem) {
@@ -281,8 +288,9 @@ select {
 /* ---------------- */
 
 .header {
-  padding: 1rem;
-  align-items: center;
+  display: grid;
+  align-content: center;
+  gap: 0.5rem;
   background-color: rgb(var(--clr-dark));
 }
 
@@ -325,13 +333,11 @@ select {
 /* ------------------- */
 
 .current-section {
-  padding: 1rem;
+  display: grid;
 }
 
 .current-weather {
-  display: grid;
   text-align: center;
-  align-items: center;
 }
 
 .city-name {
@@ -359,6 +365,8 @@ select {
   display: grid;
   gap: 0.5rem;
   padding: 1rem;
+
+  border-radius: 4px;
 }
 
 .hourly-section h3 {
@@ -370,8 +378,8 @@ select {
 .hourly-weather {
   display: flex;
   flex-direction: row-reverse;
-  overflow: auto;
   gap: 2rem;
+  overflow: auto;
 }
 
 .hourly-weather > li {
@@ -396,14 +404,12 @@ select {
 
 .data-section {
   display: grid;
-  place-items: center;
-  padding: 1rem;
-  text-align: center;
 }
 
 .weather-data {
-  overflow: auto;
+  padding: 1rem;
   display: flex;
+  justify-content: space-between;
   gap: 2rem;
   overflow: auto;
 }
@@ -414,6 +420,7 @@ select {
 }
 
 .weather-data > li > span {
+  font-size: var(--fs-400);
   color: rgb(var(--clr-white));
 }
 
@@ -422,9 +429,13 @@ select {
 /* -------------------------- */
 
 .daily-section {
-  background-color: rgb(var(--clr-white));
   padding: 1rem;
+  background-color: rgb(var(--clr-white));
+  grid-template-rows: max-content auto;
+  align-items: center;
+
   display: grid;
+  border-radius: 4px;
 }
 
 .daily-section h3 {
@@ -473,18 +484,18 @@ select {
     grid-template-columns: 1fr 2fr;
   }
 
-  .description-section {
-    grid-column: 1/-1;
-    grid-row: 2/3;
+  .hourly-section {
+    grid-column: 2/-1;
+    grid-row: 1/2;
   }
 
   .data-section {
     grid-column: 1/-1;
-    grid-row: 3/4;
+    grid-row: 2/3;
   }
 
   .daily-section {
     grid-column: 1/-1;
-    grid-row: 4/5;
+    grid-row: 3/4;
   }
 }
