@@ -352,9 +352,11 @@ select {
 
 .current-section {
   display: grid;
+  place-items: center;
 }
 
 .current-weather {
+  padding: 1rem;
   text-align: center;
 }
 
