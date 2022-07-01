@@ -4,6 +4,7 @@ import fromUnixTime from 'date-fns/fromUnixTime';
 import format from 'date-fns/format';
 import isToday from 'date-fns/isToday';
 import logoIcon from './assets/icons/logo/github.png';
+import getTime from 'date-fns/getTime';
 
 const weatherApp = {
   tempSwitch: true,
@@ -80,50 +81,31 @@ const weatherApp = {
     weatherApp.renderHourlyForecast(weatherData);
     weatherApp.renderDailyForecast(weatherData);
     weatherApp.renderWeatherExtraData(weatherData);
-    weatherApp.renderWeatherDescription(weatherData, location);
+    // weatherApp.renderWeatherDescription(weatherData, location);
+    console.log(weatherData);
   },
 
   renderCurrentWeather(data, city) {
     const currentWeather = document.querySelector('.current-weather');
-    const imgSrc = `http://openweathermap.org/img/wn/${data.current.weather[0].icon}@2x.png`;
     if (currentWeather.childNodes.length) {
       currentWeather.replaceChildren();
     }
     const currentWeatherMarkup = `
-    <li class="current-day"> ${this.getCurrentDay(city.dt, city.timezone)}</li>
-                   <li><img class="weather-img" src=${imgSrc} alt="weather image" /></li>
-                   <li class="city-name">${city.name}, ${city.sys.country}</li>
-                   <li class="current-description">${
-                     data.current.weather[0].main
-                   }</li>
-                   <li class="weather-temp"><span class="temp">${this.roundTempValue(
-                     data.current.temp
-                   )}</span><span class="unit">${this.unitsType}</span>
-                   </li>
-                   <li class="temp-max">
-                       H:<span class="temp">${this.roundTempValue(
-                         data.daily[0].temp.max
-                       )}</span
-                          ><span class="unit"> ${this.unitsType}</span>
-                    </li>
-                    <li class="temp-low">
-                       L: <span class="temp">${this.roundTempValue(
-                         data.daily[0].temp.min
-                       )}</span
-                          ><span class="unit"> ${this.unitsType}</span>
-                    </li>
-                   <li class="feels-like">Feels Like <span class='temp'>${this.roundTempValue(
-                     data.current.feels_like
-                   )}</span><span class="unit">${this.unitsType}</span>
-                   </li>
-                   <li class="sunrise">Sunrise at ${this.getSunRise(
-                     city.sys.sunrise
-                   )}</li>
-                   <li class="sunset">Sunset at ${this.getSunRise(
-                     city.sys.sunset
-                   )}</li>
-                   <li class="current-time">Local time is ${this.getCurrentTime()}</li>
-                   `;
+<li class="city-name">${city.name}, ${city.sys.country}
+</li>
+<li class="current-temp "><span class="temp">${this.roundTempValue(
+      data.current.temp
+    )}</span><span class="unit">${this.unitsType}</span>
+</li>
+<li class="current-description ">${data.current.weather[0].description}
+</li>
+<li class="temp-max-low">
+   H:<span class="temp">${this.roundTempValue(data.daily[0].temp.max)}</span
+      ><span class="unit"> ${this.unitsType}</span>
+   L: <span class="temp">${this.roundTempValue(data.daily[0].temp.min)}</span
+      ><span class="unit"> ${this.unitsType}</span>
+</li>
+`;
 
     currentWeather.insertAdjacentHTML('afterbegin', currentWeatherMarkup);
   },
@@ -145,18 +127,18 @@ const weatherApp = {
       weatherData.replaceChildren();
     }
     const dataMarkup = `
-                    <p class="humidity">
+                    <li class="humidity">
                        Humidity<span class="d-block">${data.current.humidity}%</span>
-                    </p>
-                    <p class="pressure">
+                    </li>
+                    <li class="pressure">
                        Pressure<span class="d-block">${data.current.pressure} hPa</span>
-                    </p>
-                    <p class="uvi">
+                    </li>
+                    <li class="uvi">
                        UV Index<span class="d-block">${data.current.uvi}</span>
-                    </p>
-                    <p class="wind-speed">
+                    </li>
+                    <li class="wind-speed">
                        Wind Speed<span class="d-block">${data.current.wind_speed} km/h</span>
-                    </p>
+                    </li>
                     `;
 
     weatherData.insertAdjacentHTML('afterbegin', dataMarkup);
@@ -176,13 +158,12 @@ const weatherApp = {
       .forEach((fItem) => {
         const imgSrc = `http://openweathermap.org/img/wn/${fItem.weather[0].icon}@2x.png`;
         const markupForecast = `
-      <li><p>${this.getTodayForecastTime(fItem.dt, hData.timezone_offset)}</p>
-      <p>${fItem.weather[0].main}</p>
-       <p>Humidity ${fItem.humidity}%</p>
-        <p>Prop of Rain ${this.chanceOfRain(fItem.pop)}%</p>
-
+      <li><p class="hourly-time">${this.getTodayForecastTime(
+        fItem.dt,
+        hData.timezone_offset
+      )}</p>
       <img class="weather-img" src=${imgSrc} alt="weather image" />
-      <p><span class="temp">${this.roundTempValue(
+      <p class="hourly-temp"><span class="temp">${this.roundTempValue(
         fItem.temp
       )}</span><span class="unit">${this.unitsType}</span>
       </p>
@@ -202,9 +183,6 @@ const weatherApp = {
         const imgSrc = `http://openweathermap.org/img/wn/${fItem.weather[0].icon}@2x.png`;
         const markupForecast = `
         <li><p>${this.getCurrentDay(fItem.dt, dData.timezone_offset)}</p>
-        <p>${fItem.weather[0].main}</p>
-        <p>Humidity ${fItem.humidity}%</p>
-        <p>Prop of Rain ${this.chanceOfRain(fItem.pop)}%</p>
         <img class="weather-img" src=${imgSrc} alt="weather image" />
         <p><span class="temp">${this.roundTempValue(
           fItem.temp.day
