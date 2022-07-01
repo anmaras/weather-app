@@ -11,11 +11,11 @@
   /* font-sizes */
   --fs-900: clamp(5rem, 8vw + 1rem, 9.375rem);
   --fs-800: 3.5rem;
-  --fs-700: 1.5rem;
-  --fs-600: 1rem;
-  --fs-500: 1.75rem;
-  --fs-400: 0.9375rem;
-  --fs-300: 1rem;
+  --fs-700: 2rem;
+  --fs-600: 1.363rem;
+  --fs-500: 1.25rem;
+  --fs-400: 1rem;
+  --fs-300: 0.9375rem;
   --fs-200: 0.875rem;
 
   /* font-families */
@@ -53,6 +53,7 @@
 *::before,
 *::after {
   box-sizing: border-box;
+  margin: 0;
 }
 
 /* Reset margins */
@@ -63,7 +64,7 @@ h3,
 h4,
 h5,
 p,
-li figure,
+figure,
 picture {
   margin: 0;
 }
@@ -78,7 +79,7 @@ p {
   font-weight: 400;
 }
 
-li {
+ul {
   list-style: none;
   padding: 0;
 }
@@ -261,10 +262,10 @@ select {
   width: 5rem;
   aspect-ratio: 1;
   border: 5px solid #f3f3f3;
-  border-top: 6px solid #9c41f2;
+  border-top: 6px solid rgb(var(--clr-dark), 0.7);
   border-radius: 50%;
   margin: auto;
-  animation: spin 1s infinite linear;
+  animation: spin 2s infinite linear;
 }
 
 @keyframes spin {
@@ -278,9 +279,9 @@ select {
 /* ---------------- */
 /* ----HEADER------ */
 /* ---------------- */
+
 .header {
-  padding-inline: 1rem;
-  padding-block: 2rem;
+  padding: 1rem;
   align-items: center;
   background-color: rgb(var(--clr-dark));
 }
@@ -314,32 +315,147 @@ select {
 /* ---------------- */
 
 .main-container {
-  --gap: 0;
+  display: grid;
+  background-color: rgb(var(--clr-dark));
+  color: rgb(var(--clr-light));
+}
+
+/* ------------------- */
+/* ----CURRENT-------- */
+/* ------------------- */
+
+.current-section {
+  padding: 1rem;
 }
 
 .current-weather {
-  justify-content: start;
-  --gap: 0;
+  display: grid;
+  text-align: center;
+  align-items: center;
+}
+
+.city-name {
+  font-size: var(--fs-600);
+}
+
+.current-temp {
+  font-size: var(--fs-900);
+}
+
+.current-description {
+  font-size: var(--fs-500);
+}
+
+.temp-max-low {
+  font-size: var(--fs-500);
+}
+
+/* ------------------- */
+/* ----HOURLY--------- */
+/* ------------------- */
+
+.hourly-section {
+  background-color: rgb(var(--clr-white));
+  display: grid;
+  gap: 0.5rem;
+  padding: 1rem;
+}
+
+.hourly-section h3 {
+  font-size: var(--fs-300);
+  color: rgb(var(--clr-dark), 0.7);
+  text-transform: uppercase;
 }
 
 .hourly-weather {
-  overflow: auto;
+  display: flex;
   flex-direction: row-reverse;
-  /* max-width: 50%; */
+  overflow: auto;
+  gap: 2rem;
+}
+
+.hourly-weather > li {
+  color: rgb(var(--clr-dark), 0.9);
+  display: grid;
+  gap: 1rem;
+}
+
+.hourly-time {
+  font-weight: 800;
+  font-size: var(--fs-400);
+}
+
+.hourly-temp {
+  font-size: var(--fs-400);
+  font-weight: 400;
+}
+
+/* ----------------------- */
+/* ----EXTRA-DATA--------- */
+/* ----------------------- */
+
+.data-section {
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  text-align: center;
 }
 
 .weather-data {
   overflow: auto;
+  display: flex;
+  gap: 2rem;
+  overflow: auto;
+}
+
+.weather-data > li {
+  font-size: var(--fs-500);
+  color: rgb(var(--clr-light), 0.7);
+}
+
+.weather-data > li > span {
+  color: rgb(var(--clr-white));
+}
+
+/* -------------------------- */
+/* ----DAILY-WEATHER--------- */
+/* -------------------------- */
+
+.daily-section {
+  background-color: rgb(var(--clr-white));
+  padding: 1rem;
+  display: grid;
+}
+
+.daily-section h3 {
+  color: rgb(var(--clr-dark), 0.7);
+  text-transform: uppercase;
+  font-size: var(--fs-400);
 }
 
 .daily-weather {
-  overflow: auto;
-
-  flex-direction: row-reverse;
+  display: flex;
+  flex-direction: column-reverse;
 }
 
 .daily-weather > li {
-  display: flex;
+  display: grid;
+  grid-auto-flow: column;
+  place-items: center;
+  grid-auto-columns: 1fr;
+
+  align-items: center;
+  gap: 1rem;
+
+  color: rgb(var(--clr-dark), 0.9);
+  border-top: 1px solid rgb(var(--clr-dark), 0.2);
+}
+
+.daily-weather > li > *:first-child {
+  justify-self: start;
+}
+.daily-weather > li > *:last-child {
+  justify-self: end;
 }
 
 @media (min-width: 45rem) {
@@ -355,7 +471,6 @@ select {
 
   .main-container {
     grid-template-columns: 1fr 2fr;
-    grid-auto-rows: auto;
   }
 
   .description-section {
