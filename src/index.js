@@ -128,16 +128,37 @@ const weatherApp = {
     }
     const dataMarkup = `
                     <li class="humidity">
-                       Humidity<span class="d-block">${data.current.humidity}%</span>
+                       Humidity<span class="d-block">${
+                         data.current.humidity
+                       }%</span>
                     </li>
-                    <li class="pressure">
-                       Pressure<span class="d-block">${data.current.pressure} hPa</span>
+                    <li class="current-sunrise">
+                       Sunrise<span class="d-block">${this.calcSunRiseSunset(
+                         data.current.sunrise
+                       )}</span>
                     </li>
-                    <li class="uvi">
+                    <li class="current-sunset">
+                       Sunset<span class="d-block">${this.calcSunRiseSunset(
+                         data.current.sunset
+                       )}</span>
+                    </li>
+                    <li class="current-feels-like">
+                       Feels like<span class="d-block temp">${this.roundTempValue(
+                         data.current.feels_like
+                       )} ℃</span>
+                    </li>
+                    <li class="current-pressure">
+                       Pressure<span class="d-block">${
+                         data.current.pressure
+                       } hPa</span>
+                    </li>
+                    <li class="current-uvi">
                        UV Index<span class="d-block">${data.current.uvi}</span>
                     </li>
-                    <li class="wind-speed">
-                       Wind Speed<span class="d-block">${data.current.wind_speed} km/h</span>
+                    <li class="current-wind-speed">
+                       Wind<span class="d-block">${
+                         data.current.wind_speed
+                       } km/h</span>
                     </li>
                     `;
 
@@ -245,30 +266,23 @@ const weatherApp = {
     return format(new Date(fromUnixTime(dt - timezone)), 'EEEE');
   },
 
-  getTodayTime(dt, timezone) {
-    return new Date(fromUnixTime(dt - timezone));
-  },
-
   getTodayForecastTime(dt, timezone) {
     return format(new Date(fromUnixTime(dt - timezone)), 'HH:mm');
   },
 
-  getSunRise(sunrise) {
-    return format(new Date(fromUnixTime(sunrise)), 'HH:mm:ss');
-  },
-
-  getSunRise(sunset) {
-    return format(new Date(fromUnixTime(sunset)), 'HH:mm:ss');
+  calcSunRiseSunset(sunrise) {
+    return format(new Date(fromUnixTime(sunrise)), 'HH:mm');
   },
 
   getCurrentTime() {
-    return format(new Date(), 'HH:mm:ss');
+    return format(new Date(), 'HH:mm');
   },
 
   convertCtoF(c) {
     const cToF = (c * 9) / 5 + 32;
     return cToF.toFixed(0);
   },
+
   convertFtoC(f) {
     const fToC = ((f - 32) * 5) / 9;
     return fToC.toFixed(0);
