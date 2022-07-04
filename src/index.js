@@ -3,11 +3,11 @@ import { apiKey, key } from './api/key.js';
 import fromUnixTime from 'date-fns/fromUnixTime';
 import format from 'date-fns/format';
 import isToday from 'date-fns/isToday';
+import isTomorrow from 'date-fns/isTomorrow';
 import logoIcon from './assets/icons/logo/github.png';
 
 const weatherApp = {
   tempSwitch: true,
-  unitsType: '℃',
   defaultCity: 'Athens',
 
   init() {
@@ -19,6 +19,7 @@ const weatherApp = {
     unitsToggleButton.addEventListener('click', weatherApp.convertTempUnits);
 
     buttonSearch.addEventListener('click', () => {
+      if (!searchInput.value) return;
       weatherApp.renderWeatherHandler();
       this.clearSearchInput();
     });
@@ -58,6 +59,13 @@ const weatherApp = {
         `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${apiKey}&units=metric`
       );
       if (!urlDirect.ok) {
+        const text = document.querySelector('.loading-text');
+        text.textContent = `Couldn't find data for ${cityName}`;
+
+        setTimeout(() => {
+          weatherApp.hideBackDrop();
+        }, 2000);
+
         throw new Error(
           "Couldn't find lat and lon data need, to search for a city"
         );
@@ -85,8 +93,6 @@ const weatherApp = {
     weatherApp.hideBackDrop();
     const { location, weatherData } = locationAndWeatherData;
 
-    console.log(weatherData);
-
     weatherApp.renderCurrentWeather(weatherData, location);
     weatherApp.renderHourlyForecast(weatherData);
     weatherApp.renderDailyForecast(weatherData);
@@ -103,15 +109,15 @@ const weatherApp = {
 </li>
 <li class="current-temp "><span class="temp">${this.roundTempValue(
       data.current.temp
-    )}</span>°
+    )}°C</span>
 </li>
 <li class="current-description ">${data.current.weather[0].description}
 </li>
 <li class="temp-max-low">
-   H: <span class="temp">${this.roundTempValue(data.daily[0].temp.max)}</span
-      >°
-   L: <span class="temp">${this.roundTempValue(data.daily[0].temp.min)}</span
-      >°
+   H: <span class="temp">${this.roundTempValue(data.daily[0].temp.max)}°C</span
+      >
+   L: <span class="temp">${this.roundTempValue(data.daily[0].temp.min)}°C</span
+      >
 </li>
 `;
 
@@ -124,25 +130,25 @@ const weatherApp = {
       weatherData.replaceChildren();
     }
     const dataMarkup = `
-                    <li class="humidity">
-                       Humidity<span class="d-block">${
-                         data.current.humidity
-                       }%</span>
-                    </li>
-                    <li class="current-sunrise">
-                       Sunrise<span class="d-block">${this.calcSunRiseSunset(
-                         data.current.sunrise
-                       )}</span>
-                    </li>
-                    <li class="current-sunset">
+    <li class="current-sunrise">
+    Sunrise<span class="d-block">${this.calcSunRiseSunset(
+      data.current.sunrise
+    )}</span>
+                       </li>
+                       <li class="current-sunset">
                        Sunset<span class="d-block">${this.calcSunRiseSunset(
                          data.current.sunset
                        )}</span>
-                    </li>
+                       </li>
+                       <li class="humidity">
+                          Humidity<span class="d-block">${
+                            data.current.humidity
+                          }%</span>
+                       </li>
                     <li class="current-feels-like">
                        Feels like<span class="d-block temp">${this.roundTempValue(
                          data.current.feels_like
-                       )}</span>°
+                       )}°C</span>
                     </li>
                     <li class="current-pressure">
                        Pressure<span class="d-block">${
@@ -169,7 +175,10 @@ const weatherApp = {
     }
     hData.hourly
       .filter((fItem) => {
-        if (isToday(fromUnixTime(fItem.dt))) {
+        if (
+          isToday(fromUnixTime(fItem.dt)) ||
+          isTomorrow(fromUnixTime(fItem.dt))
+        ) {
           return fItem;
         }
       })
@@ -181,7 +190,7 @@ const weatherApp = {
       <img class="weather-img" src=${imgSrc} alt="weather image" />
       <p class="hourly-temp "><span class="temp">${this.roundTempValue(
         fItem.temp
-      )}</span>°
+      )}°C</span>
       </p>
       </li>
       `;
@@ -202,8 +211,8 @@ const weatherApp = {
         <img class="weather-img" src=${imgSrc} alt="weather image" />
         <p class="daily-temp"><span class="temp">${this.roundTempValue(
           fItem.temp.max
-        )}</span>°/
-        <span class="temp">${this.roundTempValue(fItem.temp.min)}</span>°</p>
+        )}°C</span>/
+        <span class="temp">${this.roundTempValue(fItem.temp.min)}°C</span></p>
         </li>
         `;
 
@@ -220,8 +229,8 @@ const weatherApp = {
     if (weatherApp.tempSwitch) {
       tempValues.forEach((value) => {
         value.textContent = weatherApp.convertCtoF(value.textContent);
-        fahrenheitIcon.classList.add('fw-bold');
         celsiusIcon.classList.remove('fw-bold');
+        fahrenheitIcon.classList.add('fw-bold');
       });
     }
     if (!weatherApp.tempSwitch) {
@@ -236,13 +245,13 @@ const weatherApp = {
   },
 
   showBackDrop() {
-    const backDrop = document.querySelector('.backdrop');
+    const backDrop = document.querySelector('.backdrop-container');
 
     backDrop.classList.remove('d-none');
   },
 
   hideBackDrop() {
-    const backDrop = document.querySelector('.backdrop');
+    const backDrop = document.querySelector('.backdrop-container');
 
     backDrop.classList.add('d-none');
   },
@@ -271,13 +280,15 @@ const weatherApp = {
   },
 
   convertCtoF(c) {
-    const cToF = (c * 9) / 5 + 32;
-    return cToF.toFixed(0);
+    const num = c.replace(/\D/g, '');
+    const cToF = (num * 9) / 5 + 32;
+    return cToF.toFixed(0) + '°F';
   },
 
   convertFtoC(f) {
-    const fToC = ((f - 32) * 5) / 9;
-    return fToC.toFixed(0);
+    const num = f.replace(/\D/g, '');
+    const fToC = ((num - 32) * 5) / 9;
+    return fToC.toFixed(0) + '°C';
   },
 
   roundTempValue(temp) {
