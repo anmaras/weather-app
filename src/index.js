@@ -119,17 +119,6 @@ const weatherApp = {
     currentWeather.insertAdjacentHTML('afterbegin', currentWeatherMarkup);
   },
 
-  renderWeatherDescription(data, city) {
-    const weatherDescription = document.querySelector('.weather-description');
-    const currentWeatherMarkup = `
-                   Today in ${city.name} expect ${data.daily[0].weather[0].description}
-                   with the temperatures reaching ${data.daily[0].feels_like.day} at day 
-                   and ${data.daily[0].feels_like.night} at night.
-                   `;
-
-    weatherDescription.textContent = currentWeatherMarkup;
-  },
-
   renderWeatherExtraData(data) {
     const weatherData = document.querySelector('.weather-data');
     if (weatherData.childNodes.length) {
