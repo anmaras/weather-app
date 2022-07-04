@@ -4,7 +4,6 @@ import fromUnixTime from 'date-fns/fromUnixTime';
 import format from 'date-fns/format';
 import isToday from 'date-fns/isToday';
 import logoIcon from './assets/icons/logo/github.png';
-import getTime from 'date-fns/getTime';
 
 const weatherApp = {
   tempSwitch: true,
@@ -104,15 +103,15 @@ const weatherApp = {
 </li>
 <li class="current-temp "><span class="temp">${this.roundTempValue(
       data.current.temp
-    )}</span><span class="unit">${this.unitsType}</span>
+    )}</span>°
 </li>
 <li class="current-description ">${data.current.weather[0].description}
 </li>
 <li class="temp-max-low">
    H: <span class="temp">${this.roundTempValue(data.daily[0].temp.max)}</span
-      >℃ /
+      >°
    L: <span class="temp">${this.roundTempValue(data.daily[0].temp.min)}</span
-      >℃
+      >°
 </li>
 `;
 
@@ -143,7 +142,7 @@ const weatherApp = {
                     <li class="current-feels-like">
                        Feels like<span class="d-block temp">${this.roundTempValue(
                          data.current.feels_like
-                       )} ℃</span>
+                       )}</span>°
                     </li>
                     <li class="current-pressure">
                        Pressure<span class="d-block">${
@@ -180,7 +179,9 @@ const weatherApp = {
       <li>
       <p class="hourly-time">${this.getTodayForecastTime(fItem.dt)}</p>
       <img class="weather-img" src=${imgSrc} alt="weather image" />
-      <p class="hourly-temp temp">${this.roundTempValue(fItem.temp)}℃
+      <p class="hourly-temp "><span class="temp">${this.roundTempValue(
+        fItem.temp
+      )}</span>°
       </p>
       </li>
       `;
@@ -199,8 +200,10 @@ const weatherApp = {
         const markupForecast = `
         <li><p>${this.getCurrentDay(fItem.dt, dData.timezone_offset)}</p>
         <img class="weather-img" src=${imgSrc} alt="weather image" />
-        <p class="daily-temp temp">H:${this.roundTempValue(fItem.temp.max)}℃ 
-        L:${this.roundTempValue(fItem.temp.min)}℃</p>
+        <p class="daily-temp"><span class="temp">${this.roundTempValue(
+          fItem.temp.max
+        )}</span>°/
+        <span class="temp">${this.roundTempValue(fItem.temp.min)}</span>°</p>
         </li>
         `;
 
