@@ -18,10 +18,12 @@ const weatherApp = {
     document.querySelector('.header-logo').src = logoIcon;
 
     unitsToggleButton.addEventListener('click', weatherApp.convertTempUnits);
+
     buttonSearch.addEventListener('click', () => {
       weatherApp.renderWeatherHandler();
       this.clearSearchInput();
     });
+
     searchInput.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') {
         weatherApp.renderWeatherHandler();
@@ -107,10 +109,10 @@ const weatherApp = {
 <li class="current-description ">${data.current.weather[0].description}
 </li>
 <li class="temp-max-low">
-   H:<span class="temp">${this.roundTempValue(data.daily[0].temp.max)}</span
-      ><span class="unit"> ${this.unitsType}</span>
+   H: <span class="temp">${this.roundTempValue(data.daily[0].temp.max)}</span
+      >℃ /
    L: <span class="temp">${this.roundTempValue(data.daily[0].temp.min)}</span
-      ><span class="unit"> ${this.unitsType}</span>
+      >℃
 </li>
 `;
 
