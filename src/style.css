@@ -295,11 +295,11 @@ select {
 }
 
 .header-logo {
-  min-width: 100px;
+  max-width: 120px;
 }
 
 .search-wrapper {
-  position: relative;
+  display: grid;
   grid-template-columns: 3fr 1fr;
   --gap: 0;
 }
@@ -344,6 +344,7 @@ select {
   display: grid;
   background-color: rgb(var(--clr-dark));
   color: rgb(var(--clr-light));
+  gap: 1rem;
 }
 
 /* ------------------- */
@@ -465,6 +466,7 @@ select {
   color: rgb(var(--clr-dark), 0.7);
   text-transform: uppercase;
   font-size: var(--fs-400);
+  margin-bottom: 1rem;
 }
 
 .daily-weather {
@@ -485,6 +487,10 @@ select {
   border-top: 1px solid rgb(var(--clr-dark), 0.2);
 }
 
+.daily-weather > *:first-child {
+  border-bottom: 1px solid rgb(var(--clr-dark), 0.2);
+}
+
 .daily-weather > li > *:first-child {
   justify-self: start;
 }
@@ -494,13 +500,21 @@ select {
 
 @media (min-width: 45rem) {
   .header {
+    margin-bottom: 2rem;
     grid-auto-flow: column;
-    justify-items: center;
-    grid-template-columns: 1fr 1fr 1fr;
+    justify-content: space-between;
+    grid-template-columns: repeat(3, max-content);
+  }
+
+  .header-logo {
+  }
+
+  .units-btn {
+    grid-column: 3/-1;
   }
 
   .search-wrapper {
-    width: 80%;
+    width: 100%;
   }
 
   .main-container {
