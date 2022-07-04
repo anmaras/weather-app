@@ -86,7 +86,7 @@ const weatherApp = {
     weatherApp.hideBackDrop();
     const { location, weatherData } = locationAndWeatherData;
 
-    console.log(location, weatherData);
+    console.log(weatherData);
 
     weatherApp.renderCurrentWeather(weatherData, location);
     weatherApp.renderHourlyForecast(weatherData);
@@ -169,22 +169,18 @@ const weatherApp = {
       forecast.replaceChildren();
     }
     hData.hourly
-      .filter((fItem, index) => {
-        if (index <= 24) {
+      .filter((fItem) => {
+        if (isToday(fromUnixTime(fItem.dt))) {
           return fItem;
         }
       })
       .forEach((fItem) => {
         const imgSrc = `http://openweathermap.org/img/wn/${fItem.weather[0].icon}@2x.png`;
         const markupForecast = `
-      <li><p class="hourly-time">${this.getTodayForecastTime(
-        fItem.dt,
-        hData.timezone_offset
-      )}</p>
+      <li>
+      <p class="hourly-time">${this.getTodayForecastTime(fItem.dt)}</p>
       <img class="weather-img" src=${imgSrc} alt="weather image" />
-      <p class="hourly-temp"><span class="temp">${this.roundTempValue(
-        fItem.temp
-      )}</span><span class="unit">${this.unitsType}</span>
+      <p class="hourly-temp temp">${this.roundTempValue(fItem.temp)}℃
       </p>
       </li>
       `;
@@ -203,10 +199,8 @@ const weatherApp = {
         const markupForecast = `
         <li><p>${this.getCurrentDay(fItem.dt, dData.timezone_offset)}</p>
         <img class="weather-img" src=${imgSrc} alt="weather image" />
-        <p><span class="temp">${this.roundTempValue(
-          fItem.temp.day
-        )}</span><span class="unit">${this.unitsType}</span>
-        </p>
+        <p class="daily-temp temp">H:${this.roundTempValue(fItem.temp.max)}℃ 
+        L:${this.roundTempValue(fItem.temp.min)}℃</p>
         </li>
         `;
 
@@ -264,8 +258,8 @@ const weatherApp = {
     return format(new Date(fromUnixTime(dt - timezone)), 'EEEE');
   },
 
-  getTodayForecastTime(dt, timezone) {
-    return format(new Date(fromUnixTime(dt - timezone)), 'HH:mm');
+  getTodayForecastTime(dt) {
+    return format(fromUnixTime(dt), 'HH:mm');
   },
 
   calcSunRiseSunset(sunrise) {
