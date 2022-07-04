@@ -214,27 +214,24 @@ const weatherApp = {
 
   convertTempUnits() {
     const tempValues = [...document.getElementsByClassName('temp')];
-    const tempUnits = [...document.getElementsByClassName('unit')];
+    const fahrenheitIcon = document.querySelector('.fahrenheit-symbol');
+    const celsiusIcon = document.querySelector('.celsius-symbol');
 
     if (weatherApp.tempSwitch) {
       tempValues.forEach((value) => {
         value.textContent = weatherApp.convertCtoF(value.textContent);
-      });
-      tempUnits.forEach((value) => {
-        value.textContent = '°F';
+        fahrenheitIcon.classList.add('fw-bold');
+        celsiusIcon.classList.remove('fw-bold');
       });
     }
     if (!weatherApp.tempSwitch) {
       tempValues.forEach((value) => {
         value.textContent = weatherApp.convertFtoC(value.textContent);
-        tempUnits.forEach((value) => {
-          value.textContent = '°C';
-        });
+        fahrenheitIcon.classList.remove('fw-bold');
+        celsiusIcon.classList.add('fw-bold');
       });
     }
-    this.textContent === '°C'
-      ? (this.textContent = '°F')
-      : (this.textContent = '°C');
+
     weatherApp.tempSwitch = !weatherApp.tempSwitch;
   },
 
