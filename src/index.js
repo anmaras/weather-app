@@ -13,12 +13,21 @@ const weatherApp = {
 
   init() {
     const buttonSearch = document.querySelector('.search-btn');
-    const buttonFahrenheit = document.querySelector('.units-btn');
+    const unitsToggleButton = document.querySelector('.units-btn');
     const searchInput = document.querySelector('.search-input');
     document.querySelector('.header-logo').src = logoIcon;
 
-    buttonFahrenheit.addEventListener('click', weatherApp.convertTempUnits);
-    buttonSearch.addEventListener('click', weatherApp.renderWeatherHandler);
+    unitsToggleButton.addEventListener('click', weatherApp.convertTempUnits);
+    buttonSearch.addEventListener('click', () => {
+      weatherApp.renderWeatherHandler();
+      this.clearSearchInput();
+    });
+    searchInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        weatherApp.renderWeatherHandler();
+        this.clearSearchInput();
+      }
+    });
 
     weatherApp.renderWeatherHandler();
   },
@@ -81,8 +90,6 @@ const weatherApp = {
     weatherApp.renderHourlyForecast(weatherData);
     weatherApp.renderDailyForecast(weatherData);
     weatherApp.renderWeatherExtraData(weatherData);
-    // weatherApp.renderWeatherDescription(weatherData, location);
-    console.log(weatherData);
   },
 
   renderCurrentWeather(data, city) {
@@ -295,6 +302,10 @@ const weatherApp = {
   chanceOfRain(pop) {
     const chanceOfRain = pop * 100;
     return chanceOfRain.toFixed(0);
+  },
+
+  clearSearchInput() {
+    document.querySelector('.search-input').value = '';
   },
 };
 
