@@ -1,0 +1,574 @@
+/* ------------------- */
+/* Custom properties   */
+/* ------------------- */
+
+:root {
+  /* colors */
+  --clr-dark: 72, 72, 74;
+  --clr-light: 242, 242, 242;
+  --clr-white: 255, 255, 255;
+  --clr-orange: 235, 110, 76;
+
+  /* Padding Global */
+
+  /* font-sizes */
+  --fs-900: clamp(5rem, 8vw + 1rem, 9.375rem);
+  --fs-800: 3.5rem;
+  --fs-700: 2rem;
+  --fs-600: 1.363rem;
+  --fs-500: 1.25rem;
+  --fs-400: 1rem;
+  --fs-300: 0.9375rem;
+  --fs-200: 0.875rem;
+
+  /* font-families */
+  --ff-san-serif: Arial, Helvetica, sans-serif;
+}
+
+/* Cool method for responsive typography */
+@media (min-width: 35em) {
+  :root {
+    --fs-800: 5rem;
+    --fs-700: 2.5rem;
+    --fs-600: 1.5rem;
+    --fs-400: 1rem;
+  }
+}
+
+@media (min-width: 45em) {
+  :root {
+    /* font-sizes */
+    --fs-800: 6.25rem;
+    --fs-700: 3.5rem;
+    --fs-600: 2rem;
+    --fs-400: 1.125rem;
+  }
+}
+
+/* ------------------- */
+/* Reset               */
+/* ------------------- */
+
+/* https://piccalil.li/blog/a-modern-css-reset/ */
+
+/* Box sizing */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+/* Reset margins */
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+p,
+figure,
+picture {
+  margin: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  font-weight: 400;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+/* set up the body */
+body {
+  font-family: var(--ff-san-serif);
+  font-size: var(--fs-400);
+  color: rgb(var(--clr-dark));
+  background-color: rgb(var(--clr-dark));
+  line-height: 1.4;
+  min-height: 100vh;
+  padding: 1rem;
+  display: grid;
+  grid-template-rows: max-content auto;
+  gap: 1rem;
+}
+
+@media (min-width: 45rem) {
+}
+
+/* make images easier to work with */
+img,
+picture {
+  max-width: 100%;
+  display: block;
+}
+
+/* make form elements easier to work with */
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+/* remove animations for people who've turned them off */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ------------------- */
+/* Utility classes     */
+/* ------------------- */
+
+/* general */
+
+.flex {
+  display: flex;
+  gap: var(--gap, 1rem);
+}
+
+.grid {
+  display: grid;
+  gap: var(--gap, 1rem);
+}
+
+.d-block {
+  display: block;
+}
+
+.d-inline {
+  display: inline;
+}
+
+.d-none {
+  display: none;
+}
+
+.container {
+  padding-inline: 2rem;
+  margin-inline: auto;
+  max-width: 80rem;
+}
+
+.grid-container {
+  text-align: center;
+  display: grid;
+  place-items: center;
+  padding-inline: 1rem;
+}
+
+.fw-bold {
+  font-weight: 800;
+}
+
+.fw-normal {
+  font-weight: 400;
+}
+
+/* colors */
+
+.bg-dark {
+  background-color: rgb(var(--clr-dark));
+}
+.bg-accent {
+  background-color: rgb(var(--clr-light));
+}
+.bg-white {
+  background-color: rgb(var(--clr-white));
+}
+
+.text-dark {
+  color: rgb(var(--clr-dark));
+}
+.text-accent {
+  color: rgb(var(--clr-light));
+}
+.text-white {
+  color: rgb(var(--clr-white));
+}
+
+/* typography */
+
+.ff-serif {
+  font-family: var(--ff-serif);
+}
+/* .ff-sans-cond {
+  font-family: var(--ff-sans-cond);
+}
+.ff-sans-normal {
+  font-family: var(--ff-sans-normal);
+} */
+
+.letter-spacing-1 {
+  letter-spacing: 4.75px;
+}
+.letter-spacing-2 {
+  letter-spacing: 2.7px;
+}
+.letter-spacing-3 {
+  letter-spacing: 2.35px;
+}
+
+.uppercase {
+  text-transform: uppercase;
+}
+
+.fs-900 {
+  font-size: var(--fs-900);
+}
+.fs-800 {
+  font-size: var(--fs-800);
+}
+.fs-700 {
+  font-size: var(--fs-700);
+}
+.fs-600 {
+  font-size: var(--fs-600);
+}
+.fs-500 {
+  font-size: var(--fs-500);
+}
+.fs-400 {
+  font-size: var(--fs-400);
+}
+.fs-300 {
+  font-size: var(--fs-300);
+}
+.fs-200 {
+  font-size: var(--fs-200);
+}
+
+.fs-900,
+.fs-800,
+.fs-700,
+.fs-600 {
+  line-height: 1.1;
+}
+
+/* -------------- */
+/* Custom Classes */
+/* -------------- */
+
+.backdrop-container {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background-color: rgb(var(--clr-dark), 0.8);
+  text-align: center;
+}
+
+.backdrop-container > div {
+  position: relative;
+  top: 50%;
+  transform: translate(0, -50%);
+  display: grid;
+  place-content: center;
+  place-items: center;
+  gap: 1rem;
+}
+
+.loading {
+  transform: translate(-50%, -50%);
+  width: 5rem;
+  aspect-ratio: 1;
+  border: 5px solid #f3f3f3;
+  border-top: 6px solid rgb(var(--clr-orange), 1);
+  border-radius: 50%;
+  animation: spin 2s infinite linear;
+}
+
+.loading-text {
+  color: rgb(var(--clr-white));
+  text-transform: capitalize;
+  font-size: var(--fs-600);
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+/* ---------------- */
+/* ----HEADER------ */
+/* ---------------- */
+
+.header {
+  display: grid;
+  gap: 1rem;
+  justify-items: center;
+}
+
+.header-logo {
+  max-width: 120px;
+}
+
+.search-wrapper {
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  --gap: 0;
+}
+
+.search-input {
+  font-size: var(--fs-400);
+  color: rgb(var(--clr-dark), 0.9);
+  border: 0;
+  grid-column: 1/2;
+  padding: 0.5rem;
+
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+.search-input:focus {
+  outline: none;
+}
+
+.search-btn {
+  background-color: rgb(var(--clr-orange));
+  border: 0;
+  color: rgb(var(--clr-light));
+  grid-column: 2/-1;
+  padding-inline: 1rem;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  transition: 0.5ms ease-in-out;
+}
+.search-btn:active {
+  transform: translateY(1px);
+  background-color: rgb(var(--clr-orange), 0.8);
+}
+
+.units-btn {
+  justify-self: right;
+  padding-inline: 1.4rem;
+  border-radius: 4px;
+  border: 0;
+}
+
+/* ---------------- */
+/* ----MAIN-------- */
+/* ---------------- */
+
+.main-container {
+  display: grid;
+  background-color: rgb(var(--clr-dark));
+  color: rgb(var(--clr-light));
+  gap: 1rem;
+}
+
+/* ------------------- */
+/* ----CURRENT-------- */
+/* ------------------- */
+
+.current-section {
+  display: grid;
+  place-items: center;
+}
+
+.current-weather {
+  padding: 1rem;
+  display: grid;
+  justify-items: center;
+}
+
+.city-name {
+  font-size: var(--fs-600);
+}
+
+.current-temp {
+  font-size: var(--fs-900);
+}
+
+.current-description {
+  font-size: var(--fs-500);
+}
+
+.temp-max-low {
+  font-size: var(--fs-500);
+}
+
+/* ------------------- */
+/* ----HOURLY--------- */
+/* ------------------- */
+
+.hourly-section {
+  background-color: rgb(var(--clr-white));
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 4px;
+  grid-template-rows: max-content auto;
+}
+
+.hourly-section h3 {
+  font-size: var(--fs-300);
+  color: rgb(var(--clr-dark), 0.7);
+  text-transform: uppercase;
+}
+
+/* Direction change the grid direction  */
+.hourly-weather {
+  display: grid;
+  direction: rtl;
+  grid-auto-flow: column;
+  grid-auto-columns: 100px;
+  justify-content: space-between;
+  overflow: auto;
+}
+/* Direction change the item direction  */
+
+.hourly-weather > li {
+  direction: ltr;
+  color: rgb(var(--clr-dark), 0.9);
+  display: grid;
+  justify-items: center;
+  align-content: space-around;
+  gap: 1rem;
+}
+
+.hourly-time {
+  font-size: var(--fs-400);
+}
+
+.hourly-temp {
+  font-size: var(--fs-400);
+  font-weight: 400;
+}
+
+/* ----------------------- */
+/* ----EXTRA-DATA--------- */
+/* ----------------------- */
+
+.data-section {
+  display: grid;
+}
+
+.weather-data {
+  overflow: auto;
+  padding: 1rem;
+  display: grid;
+  grid-auto-flow: column;
+  justify-content: space-between;
+  text-align: center;
+  align-items: center;
+  white-space: nowrap;
+  gap: 2rem;
+}
+
+.weather-data > li {
+  font-size: var(--fs-500);
+  color: rgb(var(--clr-light), 0.7);
+}
+
+.weather-data > li > span {
+  font-size: var(--fs-500);
+  color: rgb(var(--clr-white));
+}
+
+/* -------------------------- */
+/* ----DAILY-WEATHER--------- */
+/* -------------------------- */
+
+.daily-section {
+  padding: 1rem;
+  background-color: rgb(var(--clr-white));
+  grid-template-rows: max-content auto;
+  align-items: center;
+
+  display: grid;
+  border-radius: 4px;
+}
+
+.daily-section h3 {
+  color: rgb(var(--clr-dark), 0.7);
+  text-transform: uppercase;
+  font-size: var(--fs-400);
+  margin-bottom: 1rem;
+}
+
+.daily-weather {
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+.daily-weather > li {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  justify-items: center;
+  text-align: center;
+  align-items: center;
+  gap: 0.5rem;
+
+  color: rgb(var(--clr-dark), 0.9);
+  border-top: 1px solid rgb(var(--clr-dark), 0.2);
+}
+
+.daily-weather > *:first-child {
+  border-bottom: 1px solid rgb(var(--clr-dark), 0.2);
+}
+
+.daily-weather > li > *:first-child {
+  justify-self: start;
+}
+.daily-weather > li > *:last-child {
+  justify-self: end;
+}
+
+@media (min-width: 45rem) {
+  .header {
+    margin-bottom: 2rem;
+    grid-auto-flow: column;
+    justify-content: space-between;
+    grid-template-columns: repeat(3, max-content);
+  }
+
+  .header-logo {
+  }
+
+  .units-btn {
+    grid-column: 3/-1;
+  }
+
+  .search-wrapper {
+    width: 100%;
+  }
+
+  .main-container {
+    grid-template-columns: 1fr 2fr;
+  }
+
+  .hourly-section {
+    grid-column: 2/-1;
+    grid-row: 1/2;
+  }
+
+  .data-section {
+    grid-column: 1/-1;
+    grid-row: 2/3;
+  }
+
+  .daily-section {
+    grid-column: 1/-1;
+    grid-row: 3/4;
+  }
+}
+
