@@ -2,7 +2,7 @@
 
 A weather application that provides current hourly and daily forecast weather data.
 
-<!-- ## [Live Demo](https://anmaras.github.io/todo-list/) -->
+## [Live Demo](https://anmaras.github.io/weather-app/)
 
 ## Build with
 
