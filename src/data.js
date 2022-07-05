@@ -6,7 +6,10 @@ const DEFAULT_CITY = 'Athens';
 async function fetchWeather(lat, lon) {
   try {
     const test = await fetch(
-      `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&appid=${key}&units=metric`
+      `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&appid=${key}&units=metric`,
+      {
+        mode: 'cors',
+      }
     );
 
     if (!test.ok) {
@@ -24,7 +27,10 @@ async function fetchLocation() {
   const cityName = document.querySelector('#search').value || DEFAULT_CITY;
   try {
     const urlDirect = await fetch(
-      `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${apiKey}&units=metric`
+      `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${apiKey}&units=metric`,
+      {
+        mode: 'cors',
+      }
     );
     if (!urlDirect.ok) {
       const text = document.querySelector('.loading-text');
