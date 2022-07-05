@@ -3,11 +3,11 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
-  mode: 'development',
+  mode: 'production',
   entry: {
-    entry: { import: './src/js/index.js', dependOn: 'shared' },
-    render: { import: './src/js/render.js', dependOn: 'shared' },
-    utilities: { import: './src/js/utilities.js', dependOn: 'shared' },
+    entry: { import: './src/index.js', dependOn: 'shared' },
+    render: { import: './src/render.js', dependOn: 'shared' },
+    utilities: { import: './src/utilities.js', dependOn: 'shared' },
     shared: 'date-fns',
   },
   output: {
@@ -22,7 +22,7 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       title: 'Weather App',
-      template: 'src/html/template.html',
+      template: 'src/template.html',
     }),
     new MiniCssExtractPlugin(),
   ],
