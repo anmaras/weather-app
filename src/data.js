@@ -1,23 +1,21 @@
 import { hideBackDrop } from './utilities';
-import { apiKey, key } from './api/key';
 
 const DEFAULT_CITY = 'Athens';
+const api_key_01 = process.env.API_KEY01;
 
 async function fetchWeather(lat, lon) {
   try {
-    const test = await fetch(
-      `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&appid=${key}&units=metric`,
+    const weather = await fetch(
+      `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&appid=${api_key_01}&units=metric`,
       {
         mode: 'cors',
       }
     );
 
-    if (!test.ok) {
+    if (!weather.ok) {
       throw new Error("Couldn't find city name");
     }
-    const weatherData = await test.json();
-
-    return weatherData;
+    return await weather.json();
   } catch (err) {
     console.error(err);
   }
@@ -27,7 +25,7 @@ async function fetchLocation() {
   const cityName = document.querySelector('#search').value || DEFAULT_CITY;
   try {
     const urlDirect = await fetch(
-      `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${apiKey}&units=metric`,
+      `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${process.env.API_KEY02}&units=metric`,
       {
         mode: 'cors',
       }
@@ -44,8 +42,7 @@ async function fetchLocation() {
         "Couldn't find lat and lon data need, to search for a city"
       );
     }
-    const locationData = await urlDirect.json();
-    return locationData;
+    return await urlDirect.json();
   } catch (err) {
     console.error(err);
   }
