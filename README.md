@@ -2,7 +2,7 @@
 
 A weather application that provides current hourly and daily forecast weather data.
 
-## [Live Demo](https://anmaras.github.io/weather-app/)
+## [Live Demo](https://antonis-maras-weather-app.netlify.app/)
 
 ## Build with
 
