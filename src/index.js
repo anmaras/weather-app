@@ -1,5 +1,5 @@
 import './style.css';
-import logoIcon from './assets/icons/logo/github.png';
+import logoIcon from './assets/logo_white_cropped.png';
 import { convertTempUnits, clearSearchInput } from './utilities';
 import renderWeatherHandler from './render';
 
